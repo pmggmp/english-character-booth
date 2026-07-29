@@ -1,19 +1,1025 @@
-async function saveStrip(){
-  if(photos.length !== 4) return;
+const characters = {
+  shakespeare: {
+    name: 'William Shakespeare',
+    folder: 'shakespeare',
+    description:
+      'You are creative, expressive, and full of imagination.',
+    keywords: [
+      'CREATIVITY',
+      'IMAGINATION',
+      'EXPRESSION'
+    ]
+  },
 
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
+  austen: {
+    name: 'Jane Austen',
+    folder: 'jane-austen',
+    description:
+      'You are thoughtful, observant, and understanding.',
+    keywords: [
+      'OBSERVATION',
+      'EMPATHY',
+      'THOUGHTFULNESS'
+    ]
+  },
+
+  king: {
+    name: 'Martin Luther King Jr.',
+    folder: 'martin-luther-king',
+    description:
+      'You are confident, courageous, and ready to lead.',
+    keywords: [
+      'LEADERSHIP',
+      'COURAGE',
+      'COMMUNICATION'
+    ]
+  },
+
+  keller: {
+    name: 'Helen Keller',
+    folder: 'helen-keller',
+    description:
+      'You are determined, hopeful, and strong.',
+    keywords: [
+      'PERSISTENCE',
+      'HOPE',
+      'COURAGE'
+    ]
+  },
+
+  dahl: {
+    name: 'Roald Dahl',
+    folder: 'roald-dahl',
+    description:
+      'You are playful, imaginative, and full of surprising ideas.',
+    keywords: [
+      'HUMOR',
+      'IMAGINATION',
+      'FUN'
+    ]
+  },
+
+  angelou: {
+    name: 'Maya Angelou',
+    folder: 'maya-angelou',
+    description:
+      'You are warm, inspiring, and thoughtful.',
+    keywords: [
+      'INSPIRATION',
+      'EMPATHY',
+      'WISDOM'
+    ]
+  },
+
+  christie: {
+    name: 'Agatha Christie',
+    folder: 'agatha-christie',
+    description:
+      'You are curious, logical, and focused.',
+    keywords: [
+      'LOGIC',
+      'CURIOSITY',
+      'FOCUS'
+    ]
+  },
+
+  hemingway: {
+    name: 'Ernest Hemingway',
+    folder: 'ernest-hemingway',
+    description:
+      'You are independent, clear, and strong-minded.',
+    keywords: [
+      'CLARITY',
+      'STRENGTH',
+      'INDEPENDENCE'
+    ]
+  }
+};
+
+
+const questions = [
+
+  [
+    'What do you enjoy most in English class?',
+    '영어 시간에 가장 즐거운 활동은 무엇인가요?',
+    [
+      [
+        'Creating an imaginative story',
+        '상상력이 풍부한 이야기 만들기',
+        ['shakespeare','dahl']
+      ],
+
+      [
+        'Reading and understanding feelings',
+        '글을 읽고 사람들의 감정 이해하기',
+        ['austen','angelou']
+      ],
+
+      [
+        'Giving a speech and sharing ideas',
+        '발표하며 내 생각 전달하기',
+        ['king','hemingway']
+      ],
+
+      [
+        'Solving difficult questions carefully',
+        '어려운 문제를 꼼꼼하게 해결하기',
+        ['keller','christie']
+      ]
+    ]
+  ],
+
+
+  [
+    'Which word describes you best?',
+    '나를 가장 잘 나타내는 단어는 무엇인가요?',
+    [
+      [
+        'Creative',
+        '창의적인',
+        ['shakespeare','dahl']
+      ],
+
+      [
+        'Thoughtful',
+        '사려 깊은',
+        ['austen','angelou']
+      ],
+
+      [
+        'Confident',
+        '자신감 있는',
+        ['king','hemingway']
+      ],
+
+      [
+        'Determined',
+        '의지가 강한',
+        ['keller','christie']
+      ]
+    ]
+  ],
+
+
+  [
+    'What kind of story do you like?',
+    '어떤 종류의 이야기를 좋아하나요?',
+    [
+      [
+        'A dramatic story with powerful words',
+        '힘 있는 표현이 나오는 극적인 이야기',
+        ['shakespeare','king']
+      ],
+
+      [
+        'A warm story about people and relationships',
+        '사람과 관계를 다룬 따뜻한 이야기',
+        ['austen','angelou']
+      ],
+
+      [
+        'A funny and surprising adventure',
+        '재미있고 놀라운 모험 이야기',
+        ['dahl','hemingway']
+      ],
+
+      [
+        'A mysterious story full of clues',
+        '단서가 가득한 미스터리 이야기',
+        ['christie','keller']
+      ]
+    ]
+  ],
+
+
+  [
+    'What do you do when you face a difficult task?',
+    '어려운 과제를 만났을 때 어떻게 하나요?',
+    [
+      [
+        'I try a completely new idea.',
+        '완전히 새로운 방법을 시도한다.',
+        ['dahl','shakespeare']
+      ],
+
+      [
+        'I keep trying and never give up.',
+        '포기하지 않고 계속 노력한다.',
+        ['keller','angelou']
+      ],
+
+      [
+        'I solve it step by step.',
+        '단서를 찾아 단계별로 해결한다.',
+        ['christie','austen']
+      ],
+
+      [
+        'I focus on the most important point.',
+        '가장 중요한 내용에 집중한다.',
+        ['hemingway','king']
+      ]
+    ]
+  ],
+
+
+  [
+    'How do you usually express your ideas?',
+    '평소 자신의 생각을 어떻게 표현하나요?',
+    [
+      [
+        'With creative and beautiful words',
+        '창의적이고 아름다운 말로',
+        ['shakespeare','dahl']
+      ],
+
+      [
+        'With careful details and observations',
+        '세심한 관찰과 자세한 내용으로',
+        ['austen','christie']
+      ],
+
+      [
+        'With a strong and confident voice',
+        '힘 있고 자신감 있는 목소리로',
+        ['king','angelou']
+      ],
+
+      [
+        'With simple and clear sentences',
+        '간단하고 명확한 문장으로',
+        ['hemingway','keller']
+      ]
+    ]
+  ],
+
+
+  [
+    'What is most important to you?',
+    '나에게 가장 중요한 것은 무엇인가요?',
+    [
+      [
+        'Making people laugh and imagine',
+        '사람들을 웃게 하고 상상하게 하는 것',
+        ['dahl','shakespeare']
+      ],
+
+      [
+        'Understanding and encouraging others',
+        '다른 사람을 이해하고 격려하는 것',
+        ['angelou','austen']
+      ],
+
+      [
+        'Speaking up for what is right',
+        '옳은 일을 위해 목소리를 내는 것',
+        ['king','christie']
+      ],
+
+      [
+        'Overcoming difficulties',
+        '어려움을 극복하는 것',
+        ['keller','hemingway']
+      ]
+    ]
+  ],
+
+
+  [
+    'Which activity would you choose?',
+    '다음 중 어떤 활동을 선택하고 싶나요?',
+    [
+      [
+        'Writing a play',
+        '연극 대본 쓰기',
+        ['shakespeare','dahl']
+      ],
+
+      [
+        'Writing about people’s feelings',
+        '사람들의 감정에 관한 글쓰기',
+        ['austen','angelou']
+      ],
+
+      [
+        'Giving an inspiring speech',
+        '사람들에게 용기를 주는 연설하기',
+        ['king','keller']
+      ],
+
+      [
+        'Solving a mystery',
+        '미스터리 사건 해결하기',
+        ['christie','hemingway']
+      ]
+    ]
+  ],
+
+
+  [
+    'What message would you like to share with the world?',
+    '세상에 어떤 메시지를 전하고 싶나요?',
+    [
+      [
+        'Use your imagination!',
+        '상상력을 펼쳐 보세요!',
+        ['dahl','shakespeare']
+      ],
+
+      [
+        'Your voice is important.',
+        '당신의 목소리는 소중합니다.',
+        ['angelou','austen']
+      ],
+
+      [
+        'Never give up.',
+        '절대 포기하지 마세요.',
+        ['keller','christie']
+      ],
+
+      [
+        'Be strong and speak clearly.',
+        '강하게 생각하고 분명하게 말하세요.',
+        ['hemingway','king']
+      ]
+    ]
+  ]
+
+];
+
+
+const poses = [
+  'wave.png',
+  'book.png',
+  'heart.png',
+  'thumbsup.png'
+];
+
+const poseSides = [
+  'right',
+  'right',
+  'left',
+  'left'
+];
+
+const $ = id =>
+  document.getElementById(id);
+
+
+let qIndex = 0;
+let scores = {};
+let selected = null;
+let stream = null;
+let shot = 0;
+let photos = [];
+let countingDown = false;
+
+
+function resetScores(){
+
+  scores =
+    Object.fromEntries(
+      Object.keys(characters)
+        .map(key => [key,0])
+    );
+}
+
+
+function screen(id){
+
+  document
+    .querySelectorAll('.screen')
+    .forEach(element => {
+      element.classList.remove('active');
+    });
+
+  $(id).classList.add('active');
+
+  window.scrollTo({
+    top:0,
+    behavior:'instant'
+  });
+}
+
+
+function startQuiz(){
+
+  stopCamera();
+
+  qIndex = 0;
+  selected = null;
+
+  resetScores();
+
+  screen('quiz-screen');
+  renderQuestion();
+}
+
+
+function renderQuestion(){
+
+  const [
+    english,
+    korean,
+    answers
+  ] = questions[qIndex];
+
+  $('question-number').textContent =
+    `Question ${qIndex + 1}`;
+
+  $('progress-count').textContent =
+    `${qIndex + 1} / ${questions.length}`;
+
+  $('progress-fill').style.width =
+    `${((qIndex + 1) / questions.length) * 100}%`;
+
+  $('question-text').textContent =
+    english;
+
+  $('question-korean').textContent =
+    korean;
+
+  $('answers').innerHTML = '';
+
+
+  answers.forEach(
+    ([
+      answerEnglish,
+      answerKorean,
+      targets
+    ]) => {
+
+      const button =
+        document.createElement('button');
+
+      button.type = 'button';
+      button.className = 'answer-btn';
+
+      button.innerHTML =
+        `${answerEnglish}
+         <small>${answerKorean}</small>`;
+
+      button.addEventListener(
+        'click',
+        () => choose(targets)
+      );
+
+      $('answers').appendChild(button);
+    }
+  );
+}
+
+
+function choose(targets){
+
+  targets.forEach(
+    (key,index) => {
+
+      scores[key] +=
+        index === 0 ? 2 : 1;
+    }
+  );
+
+  qIndex += 1;
+
+  if(qIndex < questions.length){
+
+    renderQuestion();
+
+  }else{
+
+    showResult();
+  }
+}
+
+
+function showResult(){
+
+  const max =
+    Math.max(
+      ...Object.values(scores)
+    );
+
+  const finalists =
+    Object.keys(scores)
+      .filter(
+        key => scores[key] === max
+      );
+
+  selected =
+    finalists[
+      Math.floor(
+        Math.random() *
+        finalists.length
+      )
+    ];
+
+  const character =
+    characters[selected];
+
+  $('result-name').textContent =
+    character.name;
+
+  $('result-description').textContent =
+    character.description;
+
+  $('result-image').src =
+    `images1/${character.folder}/book.png`;
+
+  $('result-keywords').innerHTML =
+    character.keywords
+      .map(
+        word =>
+          `<span class="keyword">
+            ${word}
+          </span>`
+      )
+      .join('');
+
+  screen('result-screen');
+}
+
+
+function openBooth(){
+
+  if(!selected) return;
+
+  shot = 0;
+  photos = [];
+
+  $('preview-grid').innerHTML = '';
+
+  $('save-strip-btn')
+    .classList.add('hidden');
+
+  $('capture-btn').disabled =
+    !stream;
+
+  const character =
+    characters[selected];
+
+  $('photo-title').textContent =
+    `Take Photos with ${character.name}`;
+
+  updatePose();
+
+  screen('photo-screen');
+}
+
+
+function updatePose(){
+
+  const character =
+    characters[selected];
+
+  const index =
+    Math.min(
+      shot,
+      poses.length - 1
+    );
+
+  $('shot-counter').textContent =
+    `${Math.min(shot + 1,4)} / 4`;
+
+  $('character-overlay').src =
+    `images1/${character.folder}/${poses[index]}`;
+
+  const side =
+    poseSides[index];
+
+  $('character-overlay').style.left =
+    side === 'left'
+      ? '4%'
+      : 'auto';
+
+  $('character-overlay').style.right =
+    side === 'right'
+      ? '4%'
+      : 'auto';
+
+  $('character-overlay')
+    .style.objectPosition =
+      side === 'left'
+        ? 'bottom left'
+        : 'bottom right';
+}
+
+
+async function startCamera(){
+
+  try{
+
+    stopCamera();
+
+    stream =
+      await navigator.mediaDevices
+        .getUserMedia({
+
+          video:{
+            facingMode:'user',
+
+            width:{
+              ideal:1280
+            },
+
+            height:{
+              ideal:960
+            }
+          },
+
+          audio:false
+        });
+
+    $('video').srcObject =
+      stream;
+
+    await $('video').play();
+
+    $('camera-message')
+      .classList.add('hidden');
+
+    $('capture-btn').disabled =
+      false;
+
+  }catch(error){
+
+    $('camera-message')
+      .classList.remove('hidden');
+
+    $('camera-message').textContent =
+      'Camera access failed. Open through HTTPS and allow camera permission.';
+  }
+}
+
+
+function sleep(milliseconds){
+
+  return new Promise(
+    resolve =>
+      setTimeout(
+        resolve,
+        milliseconds
+      )
+  );
+}
+
+
+async function captureWithCountdown(){
+
+  if(
+    !stream ||
+    shot >= 4 ||
+    countingDown
+  ){
+    return;
+  }
+
+  countingDown = true;
+
+  $('capture-btn').disabled =
+    true;
+
+  const countdown =
+    $('countdown');
+
+  countdown
+    .classList
+    .remove('hidden');
+
+
+  for(const number of [3,2,1]){
+
+    countdown.textContent =
+      number;
+
+    await sleep(700);
+  }
+
+  countdown.textContent =
+    '📸';
+
+  await sleep(250);
+
+  captureFrame();
+
+  countdown
+    .classList
+    .add('hidden');
+
+  countingDown = false;
+
+  if(shot < 4){
+
+    $('capture-btn').disabled =
+      false;
+  }
+}
+
+
+function drawVideoCover(
+  context,
+  video,
+  x,
+  y,
+  width,
+  height
+){
+
+  const videoWidth =
+    video.videoWidth || 1280;
+
+  const videoHeight =
+    video.videoHeight || 960;
+
+  const scale =
+    Math.max(
+      width / videoWidth,
+      height / videoHeight
+    );
+
+  const drawWidth =
+    videoWidth * scale;
+
+  const drawHeight =
+    videoHeight * scale;
+
+  context.drawImage(
+    video,
+
+    x +
+    (width - drawWidth) / 2,
+
+    y +
+    (height - drawHeight) / 2,
+
+    drawWidth,
+    drawHeight
+  );
+}
+
+
+function captureFrame(){
+
+  const video =
+    $('video');
+
+  const overlay =
+    $('character-overlay');
+
+  const canvas =
+    $('capture-canvas');
+
+  const context =
+    canvas.getContext('2d');
+
+
+  canvas.width = 900;
+  canvas.height = 1200;
+
+
+  context.save();
+
+  context.translate(
+    canvas.width,
+    0
+  );
+
+  context.scale(
+    -1,
+    1
+  );
+
+  drawVideoCover(
+    context,
+    video,
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+  context.restore();
+
+
+  const index =
+    Math.min(shot,3);
+
+  const side =
+    poseSides[index];
+
+  const maxWidth = 285;
+  const maxHeight = 690;
+
+  const naturalWidth =
+    overlay.naturalWidth || 1;
+
+  const naturalHeight =
+    overlay.naturalHeight || 1;
+
+  const ratio =
+    Math.min(
+      maxWidth / naturalWidth,
+      maxHeight / naturalHeight
+    );
+
+  const overlayWidth =
+    naturalWidth * ratio;
+
+  const overlayHeight =
+    naturalHeight * ratio;
+
+  const overlayX =
+    side === 'left'
+      ? 34
+      : canvas.width -
+        overlayWidth -
+        34;
+
+  const overlayY =
+    canvas.height -
+    overlayHeight -
+    30;
+
+
+  context.drawImage(
+    overlay,
+    overlayX,
+    overlayY,
+    overlayWidth,
+    overlayHeight
+  );
+
+
+  const url =
+    canvas.toDataURL(
+      'image/jpeg',
+      0.93
+    );
+
+  photos.push(url);
+
+
+  const preview =
+    document.createElement('img');
+
+  preview.src = url;
+
+  preview.alt =
+    `Photo ${shot + 1}`;
+
+  $('preview-grid')
+    .appendChild(preview);
+
+
+  shot += 1;
+
+
+  if(shot < 4){
+
+    updatePose();
+
+  }else{
+
+    $('shot-counter').textContent =
+      '4 / 4';
+
+    $('capture-btn').disabled =
+      true;
+
+    $('save-strip-btn')
+      .classList
+      .remove('hidden');
+  }
+}
+
+
+function roundedRectPath(
+  context,
+  x,
+  y,
+  width,
+  height,
+  radius
+){
+
+  const adjustedRadius =
+    Math.min(
+      radius,
+      width / 2,
+      height / 2
+    );
+
+  context.beginPath();
+
+  context.moveTo(
+    x + adjustedRadius,
+    y
+  );
+
+  context.lineTo(
+    x + width - adjustedRadius,
+    y
+  );
+
+  context.quadraticCurveTo(
+    x + width,
+    y,
+    x + width,
+    y + adjustedRadius
+  );
+
+  context.lineTo(
+    x + width,
+    y + height - adjustedRadius
+  );
+
+  context.quadraticCurveTo(
+    x + width,
+    y + height,
+    x + width - adjustedRadius,
+    y + height
+  );
+
+  context.lineTo(
+    x + adjustedRadius,
+    y + height
+  );
+
+  context.quadraticCurveTo(
+    x,
+    y + height,
+    x,
+    y + height - adjustedRadius
+  );
+
+  context.lineTo(
+    x,
+    y + adjustedRadius
+  );
+
+  context.quadraticCurveTo(
+    x,
+    y,
+    x + adjustedRadius,
+    y
+  );
+
+  context.closePath();
+}
+
+
+async function loadImage(source){
+
+  return new Promise(
+    (resolve,reject) => {
+
+      const image =
+        new Image();
+
+      image.onload =
+        () => resolve(image);
+
+      image.onerror =
+        reject;
+
+      image.src =
+        source;
+    }
+  );
+}
+
+
+async function saveStrip(){
+
+  if(photos.length !== 4){
+    return;
+  }
+
+
+  const canvas =
+    document.createElement('canvas');
+
+  const context =
+    canvas.getContext('2d');
+
 
   const canvasWidth = 1000;
+
   const sideMargin = 48;
   const gap = 22;
 
   const photoWidth =
-    (canvasWidth - sideMargin * 2 - gap) / 2;
+    (
+      canvasWidth -
+      sideMargin * 2 -
+      gap
+    ) / 2;
 
   const photoHeight = 600;
+
   const headerHeight = 170;
-  const footerHeight = 120;
+  const footerHeight = 160;
 
   const canvasHeight =
     headerHeight +
@@ -21,242 +1027,365 @@ async function saveStrip(){
     gap +
     footerHeight;
 
-  canvas.width = canvasWidth;
-  canvas.height = canvasHeight;
 
-  /* 배경 */
-  ctx.fillStyle = '#fbf4ff';
-  ctx.fillRect(
+  canvas.width =
+    canvasWidth;
+
+  canvas.height =
+    canvasHeight;
+
+
+  context.fillStyle =
+    '#fbf4ff';
+
+  context.fillRect(
     0,
     0,
     canvasWidth,
     canvasHeight
   );
 
-  /* 제목 */
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
 
-  ctx.fillStyle = '#2b2340';
-  ctx.font =
+  context.textAlign =
+    'center';
+
+  context.textBaseline =
+    'middle';
+
+
+  context.fillStyle =
+    '#2b2340';
+
+  context.font =
     'bold 50px -apple-system, BlinkMacSystemFont, sans-serif';
 
-  ctx.fillText(
+  context.fillText(
     'Which English Character Are You?',
     canvasWidth / 2,
     58
   );
 
-  /* 인물 이름 */
-  ctx.fillStyle = '#7c5ce7';
-  ctx.font =
+
+  context.fillStyle =
+    '#7c5ce7';
+
+  context.font =
     'bold 36px -apple-system, BlinkMacSystemFont, sans-serif';
 
-  ctx.fillText(
+  context.fillText(
     `With ${characters[selected].name}`,
     canvasWidth / 2,
     118
   );
 
-  /* 저장된 네 장 불러오기 */
-  const loadedImages = await Promise.all(
-    photos.map(src => new Promise((resolve, reject) => {
-      const img = new Image();
 
-      img.onload = () => resolve(img);
-      img.onerror = reject;
-      img.src = src;
-    }))
-  );
+  const loadedImages =
+    await Promise.all(
+      photos.map(loadImage)
+    );
+
 
   const positions = [
-    [sideMargin, headerHeight],
-    [
-      sideMargin + photoWidth + gap,
-      headerHeight
-    ],
+
     [
       sideMargin,
-      headerHeight + photoHeight + gap
+      headerHeight
     ],
+
     [
-      sideMargin + photoWidth + gap,
-      headerHeight + photoHeight + gap
+      sideMargin +
+      photoWidth +
+      gap,
+
+      headerHeight
+    ],
+
+    [
+      sideMargin,
+
+      headerHeight +
+      photoHeight +
+      gap
+    ],
+
+    [
+      sideMargin +
+      photoWidth +
+      gap,
+
+      headerHeight +
+      photoHeight +
+      gap
     ]
+
   ];
 
-  loadedImages.forEach((img, index) => {
-    const [photoX, photoY] = positions[index];
 
-    /* 테두리 */
-    ctx.fillStyle = '#d9ccef';
+  loadedImages.forEach(
+    (image,index) => {
 
-    roundRect(
-      ctx,
-      photoX - 4,
-      photoY - 4,
-      photoWidth + 8,
-      photoHeight + 8,
-      24
-    );
+      const [
+        photoX,
+        photoY
+      ] = positions[index];
 
-    ctx.fill();
 
-    /* 둥근 사진 */
-    ctx.save();
+      context.fillStyle =
+        '#d9ccef';
 
-    roundRect(
-      ctx,
-      photoX,
-      photoY,
-      photoWidth,
-      photoHeight,
-      20
-    );
+      roundedRectPath(
+        context,
+        photoX - 4,
+        photoY - 4,
+        photoWidth + 8,
+        photoHeight + 8,
+        24
+      );
 
-    ctx.clip();
+      context.fill();
 
-    const scale = Math.max(
-      photoWidth / img.width,
-      photoHeight / img.height
-    );
 
-    const drawWidth = img.width * scale;
-    const drawHeight = img.height * scale;
+      context.save();
 
-    ctx.drawImage(
-      img,
-      photoX + (photoWidth - drawWidth) / 2,
-      photoY + (photoHeight - drawHeight) / 2,
-      drawWidth,
-      drawHeight
-    );
+      roundedRectPath(
+        context,
+        photoX,
+        photoY,
+        photoWidth,
+        photoHeight,
+        20
+      );
 
-    ctx.restore();
-  });
+      context.clip();
 
-  /* 하단 문구는 사진 아래 별도 여백에 배치 */
-  ctx.fillStyle = '#70677f';
-  ctx.font =
+
+      const scale =
+        Math.max(
+          photoWidth /
+          image.width,
+
+          photoHeight /
+          image.height
+        );
+
+      const drawWidth =
+        image.width * scale;
+
+      const drawHeight =
+        image.height * scale;
+
+
+      context.drawImage(
+        image,
+
+        photoX +
+        (
+          photoWidth -
+          drawWidth
+        ) / 2,
+
+        photoY +
+        (
+          photoHeight -
+          drawHeight
+        ) / 2,
+
+        drawWidth,
+        drawHeight
+      );
+
+
+      context.restore();
+    }
+  );
+
+
+  context.fillStyle =
+    '#70677f';
+
+  context.font =
     'bold 29px -apple-system, BlinkMacSystemFont, sans-serif';
 
-  ctx.fillText(
+  context.fillText(
     'Learning English, Finding Myself',
     canvasWidth / 2,
-    canvasHeight - 48
+    canvasHeight - 62
   );
 
-  canvas.toBlob(async blob => {
-    if(!blob) return;
 
-    const fileName =
-      `${characters[selected].folder}-4cut.jpg`;
+  const blob =
+    await new Promise(
+      resolve =>
 
-    const file = new File(
-      [blob],
-      fileName,
-      {type:'image/jpeg'}
+        canvas.toBlob(
+          resolve,
+          'image/jpeg',
+          0.94
+        )
     );
 
-    /* 아이패드 공유 창 */
-    if(
-      navigator.canShare &&
-      navigator.canShare({files:[file]})
-    ){
-      try{
-        await navigator.share({
-          files:[file],
-          title:'English Character Photo Booth'
-        });
 
+  if(!blob){
+    return;
+  }
+
+
+  const fileName =
+    `${characters[selected].folder}-4cut.jpg`;
+
+
+  const file =
+    new File(
+      [blob],
+      fileName,
+      {
+        type:'image/jpeg'
+      }
+    );
+
+
+  if(
+    navigator.canShare &&
+    navigator.canShare({
+      files:[file]
+    })
+  ){
+
+    try{
+
+      await navigator.share({
+        files:[file],
+        title:
+          'English Character Photo Booth'
+      });
+
+      return;
+
+    }catch(error){
+
+      if(
+        error.name ===
+        'AbortError'
+      ){
         return;
-      }catch(error){
-        if(error.name === 'AbortError') return;
       }
     }
+  }
 
-    /* 일반 다운로드 */
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
 
-    link.href = url;
-    link.download = fileName;
+  const url =
+    URL.createObjectURL(blob);
 
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
 
-    setTimeout(() => {
-      URL.revokeObjectURL(url);
-    }, 1000);
+  const link =
+    document.createElement('a');
 
-  }, 'image/jpeg', 0.94);
+
+  link.href =
+    url;
+
+  link.download =
+    fileName;
+
+
+  document.body
+    .appendChild(link);
+
+  link.click();
+  link.remove();
+
+
+  setTimeout(
+    () =>
+      URL.revokeObjectURL(url),
+    1000
+  );
 }
 
 
-function roundRect(
-  ctx,
-  x,
-  y,
-  width,
-  height,
-  radius
-){
-  ctx.beginPath();
+function stopCamera(){
 
-  ctx.moveTo(
-    x + radius,
-    y
-  );
+  if(stream){
 
-  ctx.lineTo(
-    x + width - radius,
-    y
-  );
+    stream
+      .getTracks()
+      .forEach(
+        track =>
+          track.stop()
+      );
 
-  ctx.quadraticCurveTo(
-    x + width,
-    y,
-    x + width,
-    y + radius
-  );
+    stream = null;
+  }
 
-  ctx.lineTo(
-    x + width,
-    y + height - radius
-  );
 
-  ctx.quadraticCurveTo(
-    x + width,
-    y + height,
-    x + width - radius,
-    y + height
-  );
+  if($('video')){
 
-  ctx.lineTo(
-    x + radius,
-    y + height
-  );
-
-  ctx.quadraticCurveTo(
-    x,
-    y + height,
-    x,
-    y + height - radius
-  );
-
-  ctx.lineTo(
-    x,
-    y + radius
-  );
-
-  ctx.quadraticCurveTo(
-    x,
-    y,
-    x + radius,
-    y
-  );
-
-  ctx.closePath();
+    $('video').srcObject =
+      null;
+  }
 }
-$('start-btn').onclick = startQuiz;
+
+
+$('start-btn')
+  .addEventListener(
+    'click',
+    startQuiz
+  );
+
+
+$('retry-btn')
+  .addEventListener(
+    'click',
+    startQuiz
+  );
+
+
+$('photo-btn')
+  .addEventListener(
+    'click',
+    openBooth
+  );
+
+
+$('camera-btn')
+  .addEventListener(
+    'click',
+    startCamera
+  );
+
+
+$('capture-btn')
+  .addEventListener(
+    'click',
+    captureWithCountdown
+  );
+
+
+$('save-strip-btn')
+  .addEventListener(
+    'click',
+    saveStrip
+  );
+
+
+$('back-result-btn')
+  .addEventListener(
+    'click',
+    () => {
+
+      stopCamera();
+
+      screen(
+        'result-screen'
+      );
+    }
+  );
+
+
+window.addEventListener(
+  'pagehide',
+  stopCamera
+);
+
+
+resetScores();
