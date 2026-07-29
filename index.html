@@ -1,65 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Which English Character Are You?</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-<main class="app">
-  <section id="start-screen" class="screen active">
-    <div class="card hero">
-      <p class="eyebrow">ENGLISH CHARACTER PHOTO BOOTH</p>
-      <h1>Which English Character Are You?</h1>
-      <p>Answer 8 questions, discover your character, and take four photos together.</p>
-      <button id="start-btn" class="primary">START</button>
-    </div>
-  </section>
+<section id="start-screen" class="screen active">
+  <div class="start-cover">
 
-  <section id="quiz-screen" class="screen">
-    <div class="card">
-      <div class="progress-row"><span id="question-number"></span><span id="progress-count"></span></div>
-      <div class="progress"><div id="progress-fill"></div></div>
-      <h2 id="question-text"></h2>
-      <p id="question-korean" class="muted"></p>
-      <div id="answers" class="answers"></div>
-    </div>
-  </section>
+    <img class="cover-character c1"
+         src="images1/shakespeare/book.png"
+         alt="William Shakespeare">
 
-  <section id="result-screen" class="screen">
-    <div class="card result">
-      <p class="eyebrow">YOUR ENGLISH CHARACTER IS</p>
-      <img id="result-image" class="result-image" alt="">
-      <h2 id="result-name"></h2>
-      <p id="result-description" class="muted"></p>
-      <div id="result-keywords" class="keywords"></div>
-      <button id="photo-btn" class="primary">TAKE PHOTOS</button>
-      <button id="retry-btn" class="secondary">TRY AGAIN</button>
-    </div>
-  </section>
+    <img class="cover-character c2"
+         src="images1/jane-austen/book.png"
+         alt="Jane Austen">
 
-  <section id="photo-screen" class="screen">
-    <div class="card photo-card">
-      <div class="photo-head"><h2 id="photo-title"></h2><strong id="shot-counter">1 / 4</strong></div>
-      <div class="camera-stage">
-        <video id="video" autoplay playsinline muted></video>
-        <img id="character-overlay" alt="Character pose">
-        <div id="camera-message">Tap “Start Camera” and allow camera access.</div>
-      </div>
-      <div class="actions">
-        <button id="camera-btn" class="secondary">START CAMERA</button>
-        <button id="capture-btn" class="primary" disabled>TAKE PHOTO</button>
-      </div>
-      <div id="preview-grid" class="preview-grid"></div>
-      <canvas id="capture-canvas" hidden></canvas>
-      <div class="actions">
-        <button id="save-strip-btn" class="primary hidden">SAVE 4-CUT PHOTO</button>
-        <button id="back-result-btn" class="secondary">BACK</button>
-      </div>
+    <img class="cover-character c3"
+         src="images1/martin-luther-king/book.png"
+         alt="Martin Luther King Jr.">
+
+    <img class="cover-character c4"
+         src="images1/helen-keller/book.png"
+         alt="Helen Keller">
+
+    <img class="cover-character c5"
+         src="images1/roald-dahl/book.png"
+         alt="Roald Dahl">
+
+    <img class="cover-character c6"
+         src="images1/maya-angelou/book.png"
+         alt="Maya Angelou">
+
+    <img class="cover-character c7"
+         src="images1/agatha-christie/book.png"
+         alt="Agatha Christie">
+
+    <img class="cover-character c8"
+         src="images1/ernest-hemingway/book.png"
+         alt="Ernest Hemingway">
+
+    <div class="cover-center">
+      <p class="cover-label">ENGLISH CHARACTER TEST</p>
+
+      <h1>
+        Which English<br>
+        Character Are You?
+      </h1>
+
+      <p class="cover-description">
+        Discover the English writer or inspiring figure
+        who matches your personality.
+      </p>
+
+      <button id="start-btn" class="primary cover-start">
+        START
+      </button>
+
+      <p class="cover-korean">
+        나와 닮은 영어 인물을 찾아보세요
+      </p>
     </div>
-  </section>
-</main>
-<script src="script.js"></script>
-</body>
-</html>
+
+  </div>
+</section>
