@@ -40,8 +40,147 @@ function showResult(){const max=Math.max(...Object.values(scores));const finals=
 function openBooth(){shot=0;photos=[];$('preview-grid').innerHTML='';$('save-strip-btn').classList.add('hidden');$('capture-btn').disabled=!stream;const c=characters[selected];$('photo-title').textContent=`Take Photos with ${c.name}`;updatePose();screen('photo-screen');}
 function updatePose(){const c=characters[selected];$('shot-counter').textContent=`${Math.min(shot+1,4)} / 4`;$('character-overlay').src=`images1/${c.folder}/${poses[Math.min(shot,3)]}`;}
 async function startCamera(){try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});$('video').srcObject=stream;$('camera-message').classList.add('hidden');$('capture-btn').disabled=false;}catch(e){$('camera-message').textContent='Camera access failed. Open through HTTPS and allow camera permission.';}}
-function capture(){if(!stream||shot>=4)return;const v=$('video'),o=$('character-overlay'),c=$('capture-canvas'),x=c.getContext('2d');c.width=900;c.height=1200;x.save();x.translate(900,0);x.scale(-1,1);x.drawImage(v,0,0,900,1200);x.restore();x.drawImage(o,900-420-18,1200-980,420,980);const url=c.toDataURL('image1/jpeg',.92);photos.push(url);const img=document.createElement('img');img.src=url;$('preview-grid').appendChild(img);shot++;if(shot<4)updatePose();else{$('shot-counter').textContent='4 / 4';$('capture-btn').disabled=true;$('save-strip-btn').classList.remove('hidden');}}
-function saveStrip(){if(photos.length!==4)return;const c=document.createElement('canvas'),x=c.getContext('2d'),w=900,ph=1200,g=20,h=180+4*ph+5*g+130;c.width=w;c.height=h;x.fillStyle='#fff7fb';x.fillRect(0,0,w,h);x.fillStyle='#2b2340';x.textAlign='center';x.font='bold 54px Georgia';x.fillText('Which English Character Are You?',w/2,78);x.font='bold 34px -apple-system';x.fillStyle='#7c5ce7';x.fillText(characters[selected].name,w/2,132);let loaded=0;photos.forEach((src,i)=>{const im=new Image();im.onload=()=>{x.drawImage(im,0,200+i*(ph+g),w,ph);if(++loaded===4){x.fillStyle='#6f6781';x.font='28px -apple-system';x.fillText('Learning English, Finding Myself',w/2,h-54);const a=document.createElement('a');a.download=`${characters[selected].folder}-4cut.jpg`;a.href=c.toDataURL('image/jpeg',.94);a.click();}};im.src=src;});}
+function capture(){
+  if(!stream || shot >= 4) return;
+
+  const v = $('video');
+  const o = $('character-overlay');
+  const c = $('capture-canvas');
+  const x = c.getContext('2d');
+
+  c.width = 900;
+  c.height = 1200;
+
+  // 카메라 사진
+  x.save();
+  x.translate(900, 0);
+  x.scale(-1, 1);
+  x.drawImage(v, 0, 0, 900, 1200);
+  x.restore();
+
+  // 캐릭터를 화면과 비슷한 작은 크기로 저장
+  const maxW = 230;
+  const maxH = 700;
+  const ratio = Math.min(
+    maxW / o.naturalWidth,
+    maxH / o.naturalHeight
+  );
+
+  const ow = o.naturalWidth * ratio;
+  const oh = o.naturalHeight * ratio;
+
+  x.drawImage(
+    o,
+    900 - ow - 28,
+    1200 - oh - 22,
+    ow,
+    oh
+  );
+
+  // image1/jpeg가 아니라 image/jpeg
+  const url = c.toDataURL('image/jpeg', 0.92);
+
+  photos.push(url);
+
+  const img = document.createElement('img');
+  img.src = url;
+  $('preview-grid').appendChild(img);
+
+  shot++;
+
+  if(shot < 4){
+    updatePose();
+  }else{
+    $('shot-counter').textContent = '4 / 4';
+    $('capture-btn').disabled = true;
+    $('save-strip-btn').classList.remove('hidden');
+  }
+async function saveStrip(){
+  if(photos.length !== 4) return;
+
+  const c = document.createElement('canvas');
+  const x = c.getContext('2d');
+
+  const w = 900;
+  const ph = 1200;
+  const gap = 20;
+  const h = 180 + 4 * ph + 5 * gap + 130;
+
+  c.width = w;
+  c.height = h;
+
+  x.fillStyle = '#fff7fb';
+  x.fillRect(0, 0, w, h);
+
+  x.fillStyle = '#2b2340';
+  x.textAlign = 'center';
+  x.font = 'bold 54px Georgia';
+  x.fillText('Which English Character Are You?', w / 2, 78);
+
+  x.font = 'bold 34px -apple-system';
+  x.fillStyle = '#7c5ce7';
+  x.fillText(characters[selected].name, w / 2, 132);
+
+  const loadedImages = await Promise.all(
+    photos.map(src => new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = src;
+    }))
+  );
+
+  loadedImages.forEach((img, i) => {
+    x.drawImage(img, 0, 200 + i * (ph + gap), w, ph);
+  });
+
+  x.fillStyle = '#6f6781';
+  x.font = '28px -apple-system';
+  x.fillText(
+    'Learning English, Finding Myself',
+    w / 2,
+    h - 54
+  );
+
+  c.toBlob(async blob => {
+    if(!blob) return;
+
+    const fileName =
+      `${characters[selected].folder}-4cut.jpg`;
+
+    const file = new File(
+      [blob],
+      fileName,
+      {type:'image/jpeg'}
+    );
+
+    // 아이패드에서는 공유창을 열어 이미지 저장
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      try{
+        await navigator.share({
+          files:[file],
+          title:'English Character Photo Booth'
+        });
+        return;
+      }catch(error){
+        if(error.name === 'AbortError') return;
+      }
+    }
+
+    // 공유 기능을 사용할 수 없을 때 일반 다운로드
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+
+    a.href = url;
+    a.download = fileName;
+
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }, 'image/jpeg', 0.94);
+}
 function stopCamera(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}}
 $('start-btn').onclick=startQuiz;$('retry-btn').onclick=startQuiz;$('photo-btn').onclick=openBooth;$('camera-btn').onclick=startCamera;$('capture-btn').onclick=capture;$('save-strip-btn').onclick=saveStrip;$('back-result-btn').onclick=()=>{stopCamera();screen('result-screen');};resetScores();
 console.log('new script loaded 0730');
