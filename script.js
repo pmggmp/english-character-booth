@@ -492,3 +492,4 @@ resetScores();
 bindEvents();
 ensureCountdown();
 console.log('final script loaded');
+$('start-btn').onclick = startQuiz;
