@@ -2,523 +2,239 @@
   --ink:#2b2340;
   --muted:#70677f;
   --primary:#7c5ce7;
-  --primary-light:#a965dc;
-  --pink:#ff7cad;
   --line:#e7e0f3;
-  --card:rgba(255,255,255,.94);
+  --card:rgba(255,255,255,.93)
 }
-
-/* 전체 기본 설정 */
-*{
-  box-sizing:border-box;
-}
-
-html,
-body{
+*{box-sizing:border-box}
+html,body{
   margin:0;
   min-height:100%;
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   color:var(--ink);
   background:
-    radial-gradient(
-      circle at 15% 15%,
-      #ffe8f3,
-      transparent 32%
-    ),
-    radial-gradient(
-      circle at 85% 15%,
-      #e9e2ff,
-      transparent 30%
-    ),
-    linear-gradient(
-      135deg,
-      #fff8fb,
-      #f3f0ff
-    );
+    radial-gradient(circle at 15% 15%,#ffe8f3,transparent 32%),
+    radial-gradient(circle at 85% 15%,#e9e2ff,transparent 30%),
+    linear-gradient(135deg,#fff8fb,#f3f0ff)
 }
-
-body{
-  min-height:100vh;
-  overflow-x:hidden;
-  -webkit-text-size-adjust:100%;
-}
-
-button{
-  font:inherit;
-  touch-action:manipulation;
-  -webkit-tap-highlight-color:transparent;
-}
-
-/* 전체 앱 */
+button{font:inherit}
 .app{
   min-height:100vh;
   padding:20px;
   display:grid;
-  place-items:center;
+  place-items:center
 }
-
-/* 화면 전환 */
 .screen{
   display:none;
-  width:min(920px,100%);
+  width:min(920px,100%)
 }
-
-.screen.active{
-  display:block;
-}
-
-/* 공통 카드 */
+.screen.active{display:block}
 .card{
-  position:relative;
-  width:100%;
   background:var(--card);
-  border:1px solid rgba(255,255,255,.95);
+  border:1px solid #fff;
   border-radius:28px;
   padding:34px;
-  box-shadow:
-    0 20px 60px rgba(80,55,130,.16);
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
+  box-shadow:0 20px 60px rgba(80,55,130,.16);
+  backdrop-filter:blur(12px)
 }
-
-/* 시작 화면 */
 .hero{
   text-align:center;
-  padding:64px 42px;
+  padding:64px 42px
 }
-
 .eyebrow{
-  margin:0 0 10px;
   font-size:13px;
   letter-spacing:.12em;
   font-weight:900;
-  color:var(--primary);
+  color:var(--primary)
 }
-
 h1{
-  margin:10px 0 22px;
   font-family:Georgia,serif;
   font-size:clamp(42px,7vw,76px);
   line-height:1.02;
+  margin:10px 0 22px
 }
-
 .hero p{
   max-width:620px;
   margin:0 auto 30px;
   color:var(--muted);
   font-size:19px;
-  line-height:1.65;
+  line-height:1.65
 }
-
-/* 버튼 */
-.primary,
-.secondary{
+.primary,.secondary{
   min-height:52px;
   border-radius:999px;
   padding:0 26px;
   font-weight:850;
-  cursor:pointer;
-  user-select:none;
-  -webkit-user-select:none;
-  transition:
-    transform .15s ease,
-    box-shadow .15s ease,
-    opacity .15s ease;
+  cursor:pointer
 }
-
 .primary{
   border:0;
   color:#fff;
-  background:
-    linear-gradient(
-      135deg,
-      var(--primary),
-      var(--primary-light)
-    );
-  box-shadow:
-    0 10px 24px rgba(124,92,231,.28);
+  background:linear-gradient(135deg,var(--primary),#a965dc);
+  box-shadow:0 10px 24px rgba(124,92,231,.28)
 }
-
-.primary:active,
-.secondary:active,
-.answer-btn:active{
-  transform:scale(.98);
-}
-
-.primary:disabled{
-  opacity:.45;
-  cursor:not-allowed;
-  box-shadow:none;
-}
-
+.primary:disabled{opacity:.45}
 .secondary{
-  color:var(--ink);
   background:#fff;
-  border:1px solid var(--line);
+  color:var(--ink);
+  border:1px solid var(--line)
 }
-
-/* 퀴즈 진행률 */
 .progress-row{
   display:flex;
   justify-content:space-between;
-  align-items:center;
-  gap:20px;
-  color:var(--muted);
   font-weight:850;
+  color:var(--muted)
 }
-
 .progress{
   height:10px;
-  margin:10px 0 28px;
-  overflow:hidden;
-  border-radius:999px;
   background:#ece7f7;
-}
-
-#progress-fill{
-  width:12.5%;
-  height:100%;
   border-radius:999px;
-  background:
-    linear-gradient(
-      90deg,
-      var(--primary),
-      var(--pink)
-    );
-  transition:width .25s ease;
+  overflow:hidden;
+  margin:10px 0 28px
 }
-
+#progress-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--primary),#ff7cad);
+  width:12.5%;
+  transition:.2s
+}
 .card h2{
-  margin:0 0 8px;
   font-size:clamp(28px,5vw,46px);
-  line-height:1.2;
+  margin:0 0 8px
 }
-
 .muted{
   color:var(--muted);
-  line-height:1.65;
+  line-height:1.65
 }
-
-/* 정답 선택 영역 */
 .answers{
-  position:relative;
-  z-index:2;
   display:grid;
   gap:13px;
-  margin-top:22px;
+  margin-top:22px
 }
-
 .answer-btn{
-  position:relative;
-  z-index:3;
-  width:100%;
-  min-height:76px;
   padding:18px 20px;
   text-align:left;
-  color:var(--ink);
-  font-weight:800;
-  cursor:pointer;
-  background:#fff;
   border:1px solid var(--line);
   border-radius:18px;
-  box-shadow:0 5px 15px rgba(73,51,110,.04);
-  touch-action:manipulation;
+  background:#fff;
+  color:var(--ink);
+  font-weight:800
 }
-
-.answer-btn:hover{
-  border-color:#cbbcec;
-  box-shadow:
-    0 8px 22px rgba(104,70,208,.11);
-}
-
 .answer-btn small{
   display:block;
-  margin-top:4px;
   color:var(--muted);
   font-weight:500;
-  line-height:1.45;
+  margin-top:4px
 }
-
-/* 결과 화면 */
-.result{
-  text-align:center;
-}
-
+.result{text-align:center}
 .result-image{
-  display:block;
   width:min(320px,72vw);
   max-height:390px;
-  margin:0 auto 12px;
   object-fit:contain;
-  border-radius:22px;
+  border-radius:22px
 }
-
-.result h2{
-  font-family:Georgia,serif;
-}
-
+.result h2{font-family:Georgia,serif}
 .keywords{
   display:flex;
   justify-content:center;
   flex-wrap:wrap;
   gap:9px;
-  margin:18px 0 25px;
+  margin:18px 0 25px
 }
-
 .keyword{
-  padding:9px 14px;
-  color:#6846d0;
-  font-size:14px;
-  font-weight:850;
   background:#f1ecff;
+  color:#6846d0;
   border-radius:999px;
+  padding:9px 14px;
+  font-size:14px;
+  font-weight:850
 }
-
-/* 포토부스 제목 */
 .photo-head{
   display:flex;
   justify-content:space-between;
-  align-items:flex-start;
-  gap:18px;
-  margin-bottom:16px;
+  align-items:center;
+  gap:18px
 }
-
-.photo-head h2{
-  flex:1;
-  margin:0;
-}
-
-#shot-counter{
-  flex:0 0 auto;
-  min-width:54px;
-  padding-top:8px;
-  text-align:right;
-  font-size:18px;
-  font-weight:900;
-  color:var(--ink);
-}
-
-/* 카메라 영역 */
 .camera-stage{
   position:relative;
   width:100%;
-  aspect-ratio:4 / 3;
+  aspect-ratio:4/3;
   overflow:hidden;
   border-radius:24px;
-  background:#1d1927;
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,.08);
+  background:#1d1927
 }
-
 .camera-stage video{
-  display:block;
   width:100%;
   height:100%;
   object-fit:cover;
-  transform:scaleX(-1);
+  transform:scaleX(-1)
 }
-
-/*
-  캐릭터의 좌우 위치와 크기는
-  script.js의 applyLiveLayout()에서
-  각 사진마다 자동 변경됨
-*/
 #character-overlay{
   position:absolute;
-  z-index:5;
-  right:2%;
-  bottom:0;
-  width:32%;
-  height:76%;
+  right:4%;
+  bottom:3%;
+  width:24%;
+  height:auto;
+  max-height:52%;
   object-fit:contain;
-  object-position:bottom center;
+  object-position:bottom right;
+  filter:drop-shadow(0 10px 18px rgba(0,0,0,.2));
   pointer-events:none;
-  filter:
-    drop-shadow(
-      0 10px 18px rgba(0,0,0,.22)
-    );
-  transition:
-    left .2s ease,
-    right .2s ease,
-    width .2s ease,
-    height .2s ease;
+  transition:.2s ease
 }
-
-/* 카메라 시작 전 안내 */
 #camera-message{
   position:absolute;
   inset:0;
-  z-index:8;
   display:grid;
   place-items:center;
   padding:30px;
   text-align:center;
   color:#fff;
-  font-weight:850;
-  line-height:1.6;
   background:rgba(18,15,28,.58);
+  font-weight:850
 }
-
-#camera-message.hidden{
-  display:none;
-}
-
-/* 3, 2, 1 카운트다운 */
-#countdown{
+#camera-message.hidden{display:none}
+#countdown-overlay{
   position:absolute;
   inset:0;
-  z-index:20;
   display:grid;
   place-items:center;
+  font-size:clamp(64px,16vw,140px);
+  font-weight:900;
   color:#fff;
-  font-size:clamp(90px,18vw,160px);
-  font-weight:950;
-  line-height:1;
-  pointer-events:none;
-  background:rgba(0,0,0,.16);
-  text-shadow:
-    0 5px 0 rgba(0,0,0,.14),
-    0 12px 34px rgba(0,0,0,.65);
-  animation:countdownPop .7s ease;
+  background:rgba(0,0,0,.14);
+  text-shadow:0 8px 22px rgba(0,0,0,.35);
+  z-index:5;
+  pointer-events:none
 }
-
-#countdown.hidden{
-  display:none;
-}
-
-@keyframes countdownPop{
-  0%{
-    opacity:0;
-    transform:scale(.55);
-  }
-
-  30%{
-    opacity:1;
-    transform:scale(1.1);
-  }
-
-  100%{
-    opacity:1;
-    transform:scale(1);
-  }
-}
-
-/* 촬영 버튼 영역 */
+#countdown-overlay.hidden{display:none}
 .actions{
   display:flex;
   justify-content:center;
-  align-items:center;
   flex-wrap:wrap;
   gap:11px;
-  margin-top:18px;
+  margin-top:18px
 }
-
-/* 촬영한 4장 미리보기 */
 .preview-grid{
   display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
+  grid-template-columns:repeat(4,1fr);
   gap:10px;
-  margin-top:20px;
+  margin-top:20px
 }
-
 .preview-grid img{
-  display:block;
   width:100%;
-  aspect-ratio:3 / 4;
+  aspect-ratio:3/4;
   object-fit:cover;
-  border:2px solid rgba(231,224,243,.9);
-  border-radius:14px;
-  background:#eee;
-  box-shadow:
-    0 6px 18px rgba(65,45,95,.1);
+  border-radius:14px
 }
+.hidden{display:none!important}
 
-/* 숨김 처리 */
-.hidden{
-  display:none !important;
-}
-
-/* 태블릿 */
-@media(max-width:900px){
-  .app{
-    padding:14px;
-  }
-
-  .card{
-    padding:28px;
-  }
-
-  .photo-head{
-    align-items:center;
-  }
-
-  #character-overlay{
-    width:34%;
-    height:76%;
-  }
-}
-
-/* 휴대전화 */
 @media(max-width:680px){
-  .app{
-    padding:10px;
-    place-items:start center;
-  }
-
-  .screen{
-    width:100%;
-  }
-
-  .card{
-    padding:20px;
-    border-radius:22px;
-  }
-
-  .hero{
-    padding:44px 22px;
-  }
-
-  .hero p{
-    font-size:17px;
-  }
-
-  .photo-head{
-    align-items:flex-start;
-  }
-
-  .photo-head h2{
-    font-size:30px;
-  }
-
-  .camera-stage{
-    border-radius:18px;
-  }
-
+  .app{padding:10px}
+  .card{padding:20px;border-radius:22px}
+  .hero{padding:44px 22px}
+  .preview-grid{grid-template-columns:repeat(2,1fr)}
   #character-overlay{
-    width:36%;
-    height:74%;
-  }
-
-  .preview-grid{
-    grid-template-columns:repeat(2,minmax(0,1fr));
-  }
-
-  .answer-btn{
-    min-height:72px;
-    padding:16px 17px;
-  }
-
-  .actions{
-    gap:9px;
-  }
-
-  .primary,
-  .secondary{
-    min-height:50px;
-    padding:0 21px;
+    width:30%;
+    max-height:50%
   }
 }
