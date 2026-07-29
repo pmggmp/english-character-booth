@@ -1,3 +1,5 @@
+const IMAGE_ROOT = 'images1';
+
 const characters = {
   shakespeare: {
     name: 'William Shakespeare',
@@ -134,6 +136,26 @@ const questions = [
 
 const poses = ['wave.png', 'book.png', 'heart.png', 'thumbsup.png'];
 
+/* live 화면과 저장 사진에서 캐릭터 위치를 다르게 */
+const shotLayouts = [
+  {
+    live: { side: 'right', width: '30%', height: '74%', bottom: '0%' },
+    save: { side: 'right', maxW: 300, maxH: 700, right: 24, bottom: 24 }
+  },
+  {
+    live: { side: 'left', width: '34%', height: '78%', bottom: '0%' },
+    save: { side: 'left', maxW: 340, maxH: 760, left: 24, bottom: 24 }
+  },
+  {
+    live: { side: 'right', width: '31%', height: '75%', bottom: '0%' },
+    save: { side: 'right', maxW: 305, maxH: 710, right: 24, bottom: 24 }
+  },
+  {
+    live: { side: 'left', width: '35%', height: '79%', bottom: '0%' },
+    save: { side: 'left', maxW: 345, maxH: 770, left: 24, bottom: 24 }
+  }
+];
+
 const $ = id => document.getElementById(id);
 
 let qIndex = 0;
@@ -144,69 +166,47 @@ let shot = 0;
 let photos = [];
 
 function resetScores() {
-  scores = Object.fromEntries(
-    Object.keys(characters).map(key => [key, 0])
-  );
+  scores = Object.fromEntries(Object.keys(characters).map(k => [k, 0]));
 }
 
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(screen => {
-    screen.classList.remove('active');
-  });
-
-  const target = $(id);
-
-  if (target) {
-    target.classList.add('active');
-  }
+function screen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  $(id).classList.add('active');
 }
 
 function startQuiz() {
-  stopCamera();
   qIndex = 0;
-  selected = null;
-  shot = 0;
-  photos = [];
   resetScores();
-  showScreen('quiz-screen');
+  screen('quiz-screen');
   renderQuestion();
 }
 
 function renderQuestion() {
-  const [english, korean, answers] = questions[qIndex];
+  const [en, ko, answers] = questions[qIndex];
 
   $('question-number').textContent = `Question ${qIndex + 1}`;
   $('progress-count').textContent = `${qIndex + 1} / 8`;
   $('progress-fill').style.width = `${(qIndex + 1) * 12.5}%`;
-  $('question-text').textContent = english;
-  $('question-korean').textContent = korean;
+  $('question-text').textContent = en;
+  $('question-korean').textContent = ko;
+
   $('answers').innerHTML = '';
 
-  answers.forEach(([answerEnglish, answerKorean, targets]) => {
-    const button = document.createElement('button');
-
-    button.type = 'button';
-    button.className = 'answer-btn';
-    button.innerHTML = `
-      ${answerEnglish}
-      <small>${answerKorean}</small>
-    `;
-
-    button.addEventListener('click', () => {
-      chooseAnswer(targets);
-    });
-
-    $('answers').appendChild(button);
+  answers.forEach(([a, b, targets]) => {
+    const btn = document.createElement('button');
+    btn.className = 'answer-btn';
+    btn.innerHTML = `${a}<small>${b}</small>`;
+    btn.onclick = () => choose(targets);
+    $('answers').appendChild(btn);
   });
 }
 
-function chooseAnswer(targets) {
-  targets.forEach((key, index) => {
-    scores[key] += index === 0 ? 2 : 1;
+function choose(targets) {
+  targets.forEach((k, i) => {
+    scores[k] += i === 0 ? 2 : 1;
   });
 
-  qIndex += 1;
-
+  qIndex++;
   if (qIndex < questions.length) {
     renderQuestion();
   } else {
@@ -215,215 +215,163 @@ function chooseAnswer(targets) {
 }
 
 function showResult() {
-  const maxScore = Math.max(...Object.values(scores));
+  const max = Math.max(...Object.values(scores));
+  const finals = Object.keys(scores).filter(k => scores[k] === max);
+  selected = finals[Math.floor(Math.random() * finals.length)];
 
-  const finalists = Object.keys(scores).filter(key => {
-    return scores[key] === maxScore;
-  });
-
-  selected = finalists[
-    Math.floor(Math.random() * finalists.length)
-  ];
-
-  const character = characters[selected];
-
-  $('result-name').textContent = character.name;
-  $('result-description').textContent = character.description;
-  $('result-image').src =
-    `images1/${character.folder}/wave.png`;
-
-  $('result-keywords').innerHTML = character.keywords
-    .map(keyword => `<span class="keyword">${keyword}</span>`)
+  const c = characters[selected];
+  $('result-name').textContent = c.name;
+  $('result-description').textContent = c.description;
+  $('result-image').src = `${IMAGE_ROOT}/${c.folder}/wave.png`;
+  $('result-keywords').innerHTML = c.keywords
+    .map(x => `<span class="keyword">${x}</span>`)
     .join('');
 
-  showScreen('result-screen');
+  screen('result-screen');
 }
 
 function openBooth() {
-  if (!selected) return;
-
   shot = 0;
   photos = [];
-
   $('preview-grid').innerHTML = '';
   $('save-strip-btn').classList.add('hidden');
   $('capture-btn').disabled = !stream;
 
-  const character = characters[selected];
-
-  $('photo-title').textContent =
-    `Take Photos with ${character.name}`;
+  const c = characters[selected];
+  $('photo-title').textContent = `Take Photos with ${c.name}`;
 
   updatePose();
-  showScreen('photo-screen');
+  screen('photo-screen');
+}
+
+function applyLiveLayout(index) {
+  const layout = shotLayouts[Math.min(index, 3)].live;
+  const o = $('character-overlay');
+
+  o.style.left = 'auto';
+  o.style.right = 'auto';
+
+  if (layout.side === 'left') {
+    o.style.left = '2%';
+  } else {
+    o.style.right = '2%';
+  }
+
+  o.style.bottom = layout.bottom;
+  o.style.width = layout.width;
+  o.style.height = layout.height;
 }
 
 function updatePose() {
-  if (!selected) return;
+  const c = characters[selected];
+  const poseIndex = Math.min(shot, 3);
 
-  const character = characters[selected];
-  const poseIndex = Math.min(shot, poses.length - 1);
+  $('shot-counter').textContent = `${Math.min(shot + 1, 4)} / 4`;
+  $('character-overlay').src = `${IMAGE_ROOT}/${c.folder}/${poses[poseIndex]}`;
 
-  $('shot-counter').textContent =
-    `${Math.min(shot + 1, 4)} / 4`;
-
-  $('character-overlay').src =
-    `images1/${character.folder}/${poses[poseIndex]}`;
+  applyLiveLayout(poseIndex);
 }
 
 async function startCamera() {
   try {
-    stopCamera();
-
     stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: 'user'
-      },
+      video: { facingMode: 'user' },
       audio: false
     });
 
-    const video = $('video');
-
-    video.srcObject = stream;
-    video.setAttribute('playsinline', '');
-    await video.play();
-
+    $('video').srcObject = stream;
     $('camera-message').classList.add('hidden');
     $('capture-btn').disabled = false;
-  } catch (error) {
-    console.error(error);
-
-    $('camera-message').classList.remove('hidden');
+  } catch (e) {
     $('camera-message').textContent =
       'Camera access failed. Open through HTTPS and allow camera permission.';
+    $('camera-message').classList.remove('hidden');
   }
 }
 
-function waitForImage(image) {
-  if (image.complete && image.naturalWidth > 0) {
-    return Promise.resolve();
+function getCountdownEl() {
+  let el = $('countdown');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'countdown';
+    el.className = 'hidden';
+    document.querySelector('.camera-stage').appendChild(el);
+  }
+  return el;
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function runCountdown() {
+  const el = getCountdownEl();
+  el.classList.remove('hidden');
+
+  for (let n = 3; n >= 1; n--) {
+    el.textContent = n;
+    await sleep(700);
   }
 
-  return new Promise((resolve, reject) => {
-    image.onload = resolve;
-    image.onerror = reject;
-  });
+  el.classList.add('hidden');
 }
 
 async function capture() {
   if (!stream || shot >= 4) return;
 
-  const video = $('video');
-  const overlay = $('character-overlay');
-  const canvas = $('capture-canvas');
-  const context = canvas.getContext('2d');
+  $('capture-btn').disabled = true;
 
-  if (!context) return;
+  await runCountdown();
 
-  try {
-    await waitForImage(overlay);
-  } catch (error) {
-    console.error('Character image loading failed.', error);
-    return;
-  }
+  if (!stream) return;
 
-  canvas.width = 900;
-  canvas.height = 1200;
+  const v = $('video');
+  const o = $('character-overlay');
+  const c = $('capture-canvas');
+  const x = c.getContext('2d');
 
-  context.clearRect(0, 0, canvas.width, canvas.height);
+  c.width = 900;
+  c.height = 1200;
 
-  /*
-    카메라 영상을 세로 사진 비율로 자르기
-  */
-  const videoWidth = video.videoWidth || 900;
-  const videoHeight = video.videoHeight || 1200;
+  /* 카메라 */
+  x.save();
+  x.translate(c.width, 0);
+  x.scale(-1, 1);
+  x.drawImage(v, 0, 0, c.width, c.height);
+  x.restore();
 
-  const targetRatio = canvas.width / canvas.height;
-  const videoRatio = videoWidth / videoHeight;
+  /* 캐릭터 */
+  const layout = shotLayouts[Math.min(shot, 3)].save;
+  const naturalW = o.naturalWidth || 1000;
+  const naturalH = o.naturalHeight || 1000;
 
-  let sourceX = 0;
-  let sourceY = 0;
-  let sourceWidth = videoWidth;
-  let sourceHeight = videoHeight;
+  const ratio = Math.min(layout.maxW / naturalW, layout.maxH / naturalH);
+  const ow = naturalW * ratio;
+  const oh = naturalH * ratio;
 
-  if (videoRatio > targetRatio) {
-    sourceWidth = videoHeight * targetRatio;
-    sourceX = (videoWidth - sourceWidth) / 2;
+  let dx = 0;
+  if (layout.side === 'left') {
+    dx = layout.left;
   } else {
-    sourceHeight = videoWidth / targetRatio;
-    sourceY = (videoHeight - sourceHeight) / 2;
+    dx = c.width - ow - layout.right;
   }
 
-  /*
-    셀카처럼 좌우 반전하여 카메라 영상 그리기
-  */
-  context.save();
-  context.translate(canvas.width, 0);
-  context.scale(-1, 1);
+  const dy = c.height - oh - layout.bottom;
 
-  context.drawImage(
-    video,
-    sourceX,
-    sourceY,
-    sourceWidth,
-    sourceHeight,
-    0,
-    0,
-    canvas.width,
-    canvas.height
-  );
+  x.drawImage(o, dx, dy, ow, oh);
 
-  context.restore();
+  const url = c.toDataURL('image/jpeg', 0.92);
+  photos.push(url);
 
-  /*
-    캐릭터를 화면보다 지나치게 크지 않게 그리기
-  */
-  const maxCharacterWidth = 220;
-  const maxCharacterHeight = 560;
+  const img = document.createElement('img');
+  img.src = url;
+  $('preview-grid').appendChild(img);
 
-  const scale = Math.min(
-    maxCharacterWidth / overlay.naturalWidth,
-    maxCharacterHeight / overlay.naturalHeight
-  );
-
-  const characterWidth =
-    overlay.naturalWidth * scale;
-
-  const characterHeight =
-    overlay.naturalHeight * scale;
-
-  const characterX =
-    canvas.width - characterWidth - 30;
-
-  const characterY =
-    canvas.height - characterHeight - 25;
-
-  context.drawImage(
-    overlay,
-    characterX,
-    characterY,
-    characterWidth,
-    characterHeight
-  );
-
-  const photoData =
-    canvas.toDataURL('image/jpeg', 0.92);
-
-  photos.push(photoData);
-
-  const previewImage =
-    document.createElement('img');
-
-  previewImage.src = photoData;
-  previewImage.alt =
-    `Photo ${shot + 1}`;
-
-  $('preview-grid').appendChild(previewImage);
-
-  shot += 1;
+  shot++;
 
   if (shot < 4) {
     updatePose();
+    $('capture-btn').disabled = false;
   } else {
     $('shot-counter').textContent = '4 / 4';
     $('capture-btn').disabled = true;
@@ -431,278 +379,139 @@ async function capture() {
   }
 }
 
-function loadPhoto(source) {
-  return new Promise((resolve, reject) => {
-    const image = new Image();
+function roundRectPath(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
 
-    image.onload = () => resolve(image);
-    image.onerror = reject;
-    image.src = source;
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
   });
 }
 
 async function saveStrip() {
-  if (photos.length !== 4 || !selected) {
-    alert('Please take all four photos first.');
-    return;
-  }
+  if (photos.length !== 4) return;
 
-  const character = characters[selected];
+  const c = document.createElement('canvas');
+  const x = c.getContext('2d');
 
-  /*
-    가로 2칸 × 세로 2칸 형태의 4컷 사진
-  */
-  const canvas = document.createElement('canvas');
-  const context = canvas.getContext('2d');
+  c.width = 1400;
+  c.height = 2000;
 
-  if (!context) return;
+  /* 배경 */
+  x.fillStyle = '#f6eff9';
+  x.fillRect(0, 0, c.width, c.height);
 
-  const margin = 42;
-  const gap = 20;
-  const photoWidth = 540;
-  const photoHeight = 720;
-  const headerHeight = 180;
-  const footerHeight = 150;
+  /* 제목 */
+  x.textAlign = 'center';
+  x.fillStyle = '#2b2340';
+  x.font = 'bold 64px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  x.fillText('Which English Character Are You?', c.width / 2, 100);
 
-  canvas.width =
-    margin * 2 + photoWidth * 2 + gap;
+  x.fillStyle = '#7c5ce7';
+  x.font = 'bold 44px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  x.fillText(`With ${characters[selected].name}`, c.width / 2, 160);
 
-  canvas.height =
-    headerHeight +
-    margin +
-    photoHeight * 2 +
-    gap +
-    footerHeight;
+  /* 2x2 사진 배치 */
+  const loaded = await Promise.all(photos.map(loadImage));
 
-  context.fillStyle = '#fff7fb';
-  context.fillRect(
-    0,
-    0,
-    canvas.width,
-    canvas.height
-  );
+  const cardW = 640;
+  const cardH = 853;
+  const gap = 30;
+  const startX = 45;
+  const startY = 230;
+  const radius = 24;
 
-  context.fillStyle = '#2b2340';
-  context.textAlign = 'center';
-  context.textBaseline = 'middle';
+  loaded.forEach((img, i) => {
+    const col = i % 2;
+    const row = Math.floor(i / 2);
 
-  context.font =
-    'bold 50px -apple-system, BlinkMacSystemFont, sans-serif';
+    const px = startX + col * (cardW + gap);
+    const py = startY + row * (cardH + gap);
 
-  context.fillText(
-    'Which English Character Are You?',
-    canvas.width / 2,
-    65
-  );
+    x.save();
+    roundRectPath(x, px, py, cardW, cardH, radius);
+    x.clip();
+    x.drawImage(img, px, py, cardW, cardH);
+    x.restore();
 
-  context.fillStyle = '#7c5ce7';
-  context.font =
-    'bold 38px -apple-system, BlinkMacSystemFont, sans-serif';
-
-  context.fillText(
-    `With ${character.name}`,
-    canvas.width / 2,
-    128
-  );
-
-  let loadedPhotos;
-
-  try {
-    loadedPhotos = await Promise.all(
-      photos.map(loadPhoto)
-    );
-  } catch (error) {
-    console.error('Photo loading failed.', error);
-    alert('The photos could not be prepared. Please try again.');
-    return;
-  }
-
-  loadedPhotos.forEach((image, index) => {
-    const column = index % 2;
-    const row = Math.floor(index / 2);
-
-    const x =
-      margin + column * (photoWidth + gap);
-
-    const y =
-      headerHeight +
-      margin +
-      row * (photoHeight + gap);
-
-    context.save();
-
-    context.beginPath();
-    context.roundRect(
-      x,
-      y,
-      photoWidth,
-      photoHeight,
-      24
-    );
-
-    context.clip();
-
-    context.drawImage(
-      image,
-      x,
-      y,
-      photoWidth,
-      photoHeight
-    );
-
-    context.restore();
-
-    context.strokeStyle = '#e7e0f3';
-    context.lineWidth = 5;
-
-    context.beginPath();
-    context.roundRect(
-      x,
-      y,
-      photoWidth,
-      photoHeight,
-      24
-    );
-
-    context.stroke();
+    x.strokeStyle = '#d9cdee';
+    x.lineWidth = 6;
+    roundRectPath(x, px, py, cardW, cardH, radius);
+    x.stroke();
   });
 
-  context.fillStyle = '#6f6781';
-  context.font =
-    'bold 30px -apple-system, BlinkMacSystemFont, sans-serif';
+  /* 하단 문구 */
+  x.fillStyle = '#6f6781';
+  x.font = 'bold 34px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  x.fillText('Learning English, Finding Myself', c.width / 2, 1910);
 
-  context.fillText(
-    'Learning English, Finding Myself',
-    canvas.width / 2,
-    canvas.height - 75
-  );
+  c.toBlob(async blob => {
+    if (!blob) return;
 
-  canvas.toBlob(
-    async blob => {
-      if (!blob) {
-        alert('The photo could not be created.');
+    const fileName = `${characters[selected].folder}-4cut.jpg`;
+    const file = new File([blob], fileName, { type: 'image/jpeg' });
+
+    try {
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: 'English Character Photo Booth'
+        });
         return;
       }
+    } catch (error) {
+      if (error.name === 'AbortError') return;
+    }
 
-      const fileName =
-        `${character.folder}-4cut.jpg`;
-
-      const file = new File(
-        [blob],
-        fileName,
-        { type: 'image/jpeg' }
-      );
-
-      /*
-        아이패드에서는 공유창을 열어
-        ‘이미지 저장’을 선택할 수 있게 함
-      */
-      if (
-        navigator.canShare &&
-        navigator.canShare({ files: [file] })
-      ) {
-        try {
-          await navigator.share({
-            files: [file],
-            title: 'English Character Photo Booth',
-            text: `Take photos with ${character.name}`
-          });
-
-          return;
-        } catch (error) {
-          if (error.name === 'AbortError') {
-            return;
-          }
-
-          console.error(error);
-        }
-      }
-
-      /*
-        공유 기능이 없는 경우 다운로드
-      */
-      const url =
-        URL.createObjectURL(blob);
-
-      const link =
-        document.createElement('a');
-
-      link.href = url;
-      link.download = fileName;
-
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-
-      window.setTimeout(() => {
-        URL.revokeObjectURL(url);
-      }, 1500);
-    },
-    'image/jpeg',
-    0.94
-  );
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }, 'image/jpeg', 0.94);
 }
 
 function stopCamera() {
   if (stream) {
-    stream.getTracks().forEach(track => {
-      track.stop();
-    });
-
+    stream.getTracks().forEach(t => t.stop());
     stream = null;
   }
-
-  const video = $('video');
-
-  if (video) {
-    video.srcObject = null;
-  }
+  $('capture-btn').disabled = true;
 }
 
-function connectButtons() {
-  const startButton = $('start-btn');
-  const retryButton = $('retry-btn');
-  const photoButton = $('photo-btn');
-  const cameraButton = $('camera-btn');
-  const captureButton = $('capture-btn');
-  const saveButton = $('save-strip-btn');
-  const backButton = $('back-result-btn');
-
-  if (startButton) {
-    startButton.addEventListener('click', startQuiz);
-  }
-
-  if (retryButton) {
-    retryButton.addEventListener('click', startQuiz);
-  }
-
-  if (photoButton) {
-    photoButton.addEventListener('click', openBooth);
-  }
-
-  if (cameraButton) {
-    cameraButton.addEventListener('click', startCamera);
-  }
-
-  if (captureButton) {
-    captureButton.addEventListener('click', capture);
-  }
-
-  if (saveButton) {
-    saveButton.addEventListener('click', saveStrip);
-  }
-
-  if (backButton) {
-    backButton.addEventListener('click', () => {
-      stopCamera();
-      showScreen('result-screen');
-    });
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', () => {
   resetScores();
-  connectButtons();
 
-  console.log('English Character Booth loaded successfully.');
+  if ($('start-btn')) $('start-btn').onclick = startQuiz;
+  if ($('retry-btn')) $('retry-btn').onclick = startQuiz;
+  if ($('photo-btn')) $('photo-btn').onclick = openBooth;
+  if ($('camera-btn')) $('camera-btn').onclick = startCamera;
+  if ($('capture-btn')) $('capture-btn').onclick = capture;
+  if ($('save-strip-btn')) $('save-strip-btn').onclick = saveStrip;
+  if ($('back-result-btn')) {
+    $('back-result-btn').onclick = () => {
+      stopCamera();
+      screen('result-screen');
+    };
+  }
+
+  getCountdownEl();
+  console.log('FINAL SCRIPT LOADED');
 });
