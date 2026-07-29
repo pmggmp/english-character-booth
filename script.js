@@ -95,6 +95,7 @@ function capture(){
     $('capture-btn').disabled = true;
     $('save-strip-btn').classList.remove('hidden');
   }
+  }
 async function saveStrip(){
   if(photos.length !== 4) return;
 
