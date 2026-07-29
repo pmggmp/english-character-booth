@@ -238,3 +238,172 @@ h1{
     max-height:50%
   }
 }
+/* =========================
+   FINAL START COVER
+========================= */
+
+.start-cover{
+  position:relative;
+  width:100%;
+  min-height:760px;
+  overflow:hidden;
+  border-radius:32px;
+  display:grid;
+  place-items:center;
+  padding:75px 40px;
+  background:
+    radial-gradient(circle at 50% 42%,
+      rgba(255,255,255,1) 0%,
+      rgba(255,255,255,.94) 25%,
+      rgba(255,255,255,.30) 58%,
+      transparent 72%),
+    linear-gradient(135deg,#ffeaf4,#eee8ff);
+  box-shadow:0 24px 70px rgba(80,55,130,.18);
+}
+
+.cover-center{
+  position:relative;
+  z-index:10;
+  width:min(590px,78%);
+  padding:48px 34px;
+  text-align:center;
+  border-radius:32px;
+  background:rgba(255,255,255,.90);
+  border:2px solid rgba(255,255,255,.96);
+  box-shadow:0 20px 55px rgba(90,65,140,.17);
+  backdrop-filter:blur(16px);
+}
+
+.cover-label{
+  margin:0 0 15px;
+  color:#7c5ce7;
+  font-size:14px;
+  font-weight:900;
+  letter-spacing:.16em;
+}
+
+.cover-center h1{
+  margin:0;
+  color:#2b2340;
+  font-family:Georgia,serif;
+  font-size:clamp(42px,6vw,70px);
+  line-height:1.04;
+}
+
+.cover-description{
+  max-width:480px;
+  margin:24px auto;
+  color:#70677f;
+  font-size:18px;
+  line-height:1.55;
+}
+
+.cover-start{
+  min-width:190px;
+  min-height:62px;
+  font-size:20px;
+  letter-spacing:.08em;
+}
+
+.cover-korean{
+  margin:18px 0 0;
+  color:#847990;
+  font-size:15px;
+  font-weight:700;
+}
+
+.cover-character{
+  position:absolute;
+  z-index:2;
+  width:145px;
+  height:205px;
+  object-fit:contain;
+  object-position:center bottom;
+  filter:drop-shadow(0 12px 15px rgba(55,35,80,.20));
+  pointer-events:none;
+}
+
+.c1{
+  left:3%;
+  top:3%;
+  transform:rotate(-7deg);
+}
+
+.c2{
+  right:3%;
+  top:3%;
+  transform:rotate(7deg);
+}
+
+.c3{
+  left:0;
+  top:34%;
+  transform:rotate(-4deg);
+}
+
+.c4{
+  right:0;
+  top:34%;
+  transform:rotate(4deg);
+}
+
+.c5{
+  left:5%;
+  bottom:0;
+  transform:rotate(5deg);
+}
+
+.c6{
+  right:5%;
+  bottom:0;
+  transform:rotate(-5deg);
+}
+
+.c7{
+  left:23%;
+  bottom:-6%;
+  transform:rotate(-2deg);
+}
+
+.c8{
+  right:23%;
+  bottom:-6%;
+  transform:rotate(2deg);
+}
+
+@media(max-width:680px){
+  .start-cover{
+    min-height:700px;
+    padding:55px 15px;
+  }
+
+  .cover-center{
+    width:88%;
+    padding:38px 20px;
+  }
+
+  .cover-description{
+    font-size:16px;
+  }
+
+  .cover-character{
+    width:92px;
+    height:140px;
+  }
+
+  .c1,.c3,.c5{
+    left:-2%;
+  }
+
+  .c2,.c4,.c6{
+    right:-2%;
+  }
+
+  .c7{
+    left:17%;
+  }
+
+  .c8{
+    right:17%;
+  }
+}
