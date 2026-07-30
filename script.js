@@ -1,4 +1,4 @@
-const ASSET_VERSION = '31';
+const ASSET_VERSION = Date.now();
 
 const characters = {
   shakespeare: {
