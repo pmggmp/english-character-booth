@@ -394,8 +394,8 @@ function getVisibleBounds(image) {
 function drawCharacter(context, overlay, side, canvasWidth, canvasHeight) {
   const bounds = getVisibleBounds(overlay);
 
-  const targetWidth = canvasWidth * 0.35;
-  const maximumHeight = canvasHeight * 0.70;
+ const targetWidth = canvasWidth * 0.52;
+const maximumHeight = canvasHeight * 0.82;
 
   let drawWidth = targetWidth;
   let drawHeight = drawWidth * (bounds.height / bounds.width);
