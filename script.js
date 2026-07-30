@@ -1,99 +1,196 @@
 const characters = {
-  shakespeare: {
-    name: 'William Shakespeare',
-    folder: 'shakespeare',
+
+  shakespeare:{
+    name:'William Shakespeare',
+    folder:'shakespeare',
+
     description:
-      'You are creative, expressive, and full of imagination.',
-    keywords: [
+      'You express your ideas creatively and enjoy using imagination and powerful language.',
+
+    korean:
+      '창의적인 생각을 풍부한 언어로 표현하는 것을 좋아하며 상상력과 이야기 구성 능력이 돋보이는 유형이에요.',
+
+    type:'상상력 넘치는 표현가',
+    years:'1564-1616',
+
+    quote:
+      'Use your imagination and express your ideas boldly.',
+
+    keywords:[
       'CREATIVITY',
       'IMAGINATION',
       'EXPRESSION'
     ]
   },
 
-  austen: {
-    name: 'Jane Austen',
-    folder: 'jane-austen',
+
+  austen:{
+    name:'Jane Austen',
+    folder:'jane-austen',
+
     description:
-      'You are thoughtful, observant, and understanding.',
-    keywords: [
+      'You carefully observe people and understand emotions, relationships, and small details.',
+
+    korean:
+      '사람들의 감정과 관계를 세심하게 살피며 작은 변화와 특징을 잘 발견하는 유형이에요.',
+
+    type:'섬세한 관찰자',
+    years:'1775-1817',
+
+    quote:
+      'Observe carefully and understand the feelings of others.',
+
+    keywords:[
       'OBSERVATION',
       'EMPATHY',
       'THOUGHTFULNESS'
     ]
   },
 
-  king: {
-    name: 'Martin Luther King Jr.',
-    folder: 'martin-luther-king',
+
+  king:{
+    name:'Martin Luther King Jr.',
+    folder:'martin-luther-king',
+
     description:
-      'You are confident, courageous, and ready to lead.',
-    keywords: [
+      'You speak with courage and confidence and inspire others through clear communication.',
+
+    korean:
+      '자신의 생각을 분명하고 자신감 있게 말하며 다른 사람에게 용기와 긍정적인 변화를 전하는 유형이에요.',
+
+    type:'용기 있는 소통가',
+    years:'1929-1968',
+
+    quote:
+      'Your voice can inspire positive change.',
+
+    keywords:[
       'LEADERSHIP',
       'COURAGE',
       'COMMUNICATION'
     ]
   },
 
-  keller: {
-    name: 'Helen Keller',
-    folder: 'helen-keller',
+
+  keller:{
+    name:'Helen Keller',
+    folder:'helen-keller',
+
     description:
-      'You are determined, hopeful, and strong.',
-    keywords: [
+      'You remain hopeful and determined and continue moving forward when difficulties appear.',
+
+    korean:
+      '어려움이 생겨도 쉽게 포기하지 않고 희망과 끈기를 바탕으로 끝까지 노력하는 유형이에요.',
+
+    type:'희망을 잃지 않는 도전자',
+    years:'1880-1968',
+
+    quote:
+      'Keep moving forward with hope and courage.',
+
+    keywords:[
       'PERSISTENCE',
       'HOPE',
       'COURAGE'
     ]
   },
 
-  dahl: {
-    name: 'Roald Dahl',
-    folder: 'roald-dahl',
+
+  dahl:{
+    name:'Roald Dahl',
+    folder:'roald-dahl',
+
     description:
-      'You are playful, imaginative, and full of surprising ideas.',
-    keywords: [
+      'You enjoy humor, surprising ideas, and imaginative ways of looking at ordinary things.',
+
+    korean:
+      '평범한 상황에서도 재미있고 독특한 생각을 떠올리며 상상력과 유머 감각을 즐기는 유형이에요.',
+
+    type:'재치 있는 상상가',
+    years:'1916-1990',
+
+    quote:
+      'Let imagination make the ordinary extraordinary.',
+
+    keywords:[
       'HUMOR',
       'IMAGINATION',
       'FUN'
     ]
   },
 
-  angelou: {
-    name: 'Maya Angelou',
-    folder: 'maya-angelou',
+
+  angelou:{
+    name:'Maya Angelou',
+    folder:'maya-angelou',
+
     description:
-      'You are warm, inspiring, and thoughtful.',
-    keywords: [
+      'You understand others warmly and encourage people through empathy, wisdom, and confidence.',
+
+    korean:
+      '다른 사람의 마음을 따뜻하게 이해하고 공감과 지혜가 담긴 말로 힘과 용기를 주는 유형이에요.',
+
+    type:'따뜻한 영감 전달자',
+    years:'1928-2014',
+
+    quote:
+      'Encourage others with warmth, wisdom, and confidence.',
+
+    keywords:[
       'INSPIRATION',
       'EMPATHY',
       'WISDOM'
     ]
   },
 
-  christie: {
-    name: 'Agatha Christie',
-    folder: 'agatha-christie',
+
+  christie:{
+    name:'Agatha Christie',
+    folder:'agatha-christie',
+
     description:
-      'You are curious, logical, and focused.',
-    keywords: [
+      'You enjoy clues, careful observation, logical thinking, and solving problems step by step.',
+
+    korean:
+      '작은 단서도 놓치지 않고 논리적으로 생각하며 문제를 단계별로 해결하는 것을 좋아하는 유형이에요.',
+
+    type:'집중력 있는 탐구자',
+    years:'1890-1976',
+
+    quote:
+      'Every mystery begins with careful observation.',
+
+    keywords:[
       'LOGIC',
       'CURIOSITY',
       'FOCUS'
     ]
   },
 
-  hemingway: {
-    name: 'Ernest Hemingway',
-    folder: 'ernest-hemingway',
+
+  hemingway:{
+    name:'Ernest Hemingway',
+    folder:'ernest-hemingway',
+
     description:
-      'You are independent, clear, and strong-minded.',
-    keywords: [
+      'You value clear thinking, independence, courage, and simple but powerful communication.',
+
+    korean:
+      '핵심을 명확하게 파악하고 간결하게 표현하며 자신의 생각에 따라 독립적으로 행동하는 유형이에요.',
+
+    type:'명확하고 독립적인 실천가',
+    years:'1899-1961',
+
+    quote:
+      'Think clearly, act bravely, and stay true to yourself.',
+
+    keywords:[
       'CLARITY',
       'STRENGTH',
       'INDEPENDENCE'
     ]
   }
+
 };
 
 
@@ -363,6 +460,7 @@ const poseSides = [
   'left'
 ];
 
+
 const $ = id =>
   document.getElementById(id);
 
@@ -391,14 +489,21 @@ function screen(id){
   document
     .querySelectorAll('.screen')
     .forEach(element => {
-      element.classList.remove('active');
+
+      element
+        .classList
+        .remove('active');
     });
 
-  $(id).classList.add('active');
+
+  $(id)
+    .classList
+    .add('active');
+
 
   window.scrollTo({
     top:0,
-    behavior:'instant'
+    behavior:'auto'
   });
 }
 
@@ -409,6 +514,8 @@ function startQuiz(){
 
   qIndex = 0;
   selected = null;
+  shot = 0;
+  photos = [];
 
   resetScores();
 
@@ -425,22 +532,29 @@ function renderQuestion(){
     answers
   ] = questions[qIndex];
 
+
   $('question-number').textContent =
     `Question ${qIndex + 1}`;
+
 
   $('progress-count').textContent =
     `${qIndex + 1} / ${questions.length}`;
 
+
   $('progress-fill').style.width =
     `${((qIndex + 1) / questions.length) * 100}%`;
+
 
   $('question-text').textContent =
     english;
 
+
   $('question-korean').textContent =
     korean;
 
-  $('answers').innerHTML = '';
+
+  $('answers').innerHTML =
+    '';
 
 
   answers.forEach(
@@ -453,19 +567,28 @@ function renderQuestion(){
       const button =
         document.createElement('button');
 
-      button.type = 'button';
-      button.className = 'answer-btn';
+
+      button.type =
+        'button';
+
+
+      button.className =
+        'answer-btn';
+
 
       button.innerHTML =
         `${answerEnglish}
          <small>${answerKorean}</small>`;
+
 
       button.addEventListener(
         'click',
         () => choose(targets)
       );
 
-      $('answers').appendChild(button);
+
+      $('answers')
+        .appendChild(button);
     }
   );
 }
@@ -481,7 +604,9 @@ function choose(targets){
     }
   );
 
+
   qIndex += 1;
+
 
   if(qIndex < questions.length){
 
@@ -489,23 +614,26 @@ function choose(targets){
 
   }else{
 
-    showResult();
+    showAnalysis();
   }
 }
 
 
-function showResult(){
+function selectResult(){
 
-  const max =
+  const maximumScore =
     Math.max(
       ...Object.values(scores)
     );
 
+
   const finalists =
     Object.keys(scores)
       .filter(
-        key => scores[key] === max
+        key =>
+          scores[key] === maximumScore
       );
+
 
   selected =
     finalists[
@@ -514,28 +642,93 @@ function showResult(){
         finalists.length
       )
     ];
+}
+
+
+async function showAnalysis(){
+
+  selectResult();
+
+  screen('analysis-screen');
+
+
+  const steps =
+    document.querySelectorAll(
+      '.analysis-step'
+    );
+
+
+  steps.forEach(
+    step =>
+      step.classList.remove('active')
+  );
+
+
+  await sleep(250);
+
+  steps[0]
+    .classList
+    .add('active');
+
+
+  await sleep(650);
+
+  steps[1]
+    .classList
+    .add('active');
+
+
+  await sleep(650);
+
+  steps[2]
+    .classList
+    .add('active');
+
+
+  await sleep(700);
+
+  showResult();
+}
+
+
+function showResult(){
 
   const character =
     characters[selected];
 
+
   $('result-name').textContent =
     character.name;
 
+
   $('result-description').textContent =
-    character.description;
+    character.korean;
+
 
   $('result-image').src =
     `images1/${character.folder}/book.png`;
+
+
+  $('result-type').textContent =
+    character.type;
+
+
+  $('result-years').textContent =
+    character.years;
+
+
+  $('result-quote').textContent =
+    character.quote;
+
 
   $('result-keywords').innerHTML =
     character.keywords
       .map(
         word =>
-          `<span class="keyword">
-            ${word}
-          </span>`
+          `<span class="keyword">${word}</span>`
       )
       .join('');
+
 
   screen('result-screen');
 }
@@ -543,24 +736,35 @@ function showResult(){
 
 function openBooth(){
 
-  if(!selected) return;
+  if(!selected){
+    return;
+  }
+
 
   shot = 0;
   photos = [];
 
-  $('preview-grid').innerHTML = '';
+
+  $('preview-grid').innerHTML =
+    '';
+
 
   $('save-strip-btn')
-    .classList.add('hidden');
+    .classList
+    .add('hidden');
+
 
   $('capture-btn').disabled =
     !stream;
 
+
   const character =
     characters[selected];
 
+
   $('photo-title').textContent =
     `Take Photos with ${character.name}`;
+
 
   updatePose();
 
@@ -573,30 +777,37 @@ function updatePose(){
   const character =
     characters[selected];
 
-  const index =
+
+  const poseIndex =
     Math.min(
       shot,
       poses.length - 1
     );
 
+
   $('shot-counter').textContent =
     `${Math.min(shot + 1,4)} / 4`;
 
+
   $('character-overlay').src =
-    `images1/${character.folder}/${poses[index]}`;
+    `images1/${character.folder}/${poses[poseIndex]}`;
+
 
   const side =
-    poseSides[index];
+    poseSides[poseIndex];
+
 
   $('character-overlay').style.left =
     side === 'left'
       ? '4%'
       : 'auto';
 
+
   $('character-overlay').style.right =
     side === 'right'
       ? '4%'
       : 'auto';
+
 
   $('character-overlay')
     .style.objectPosition =
@@ -611,6 +822,7 @@ async function startCamera(){
   try{
 
     stopCamera();
+
 
     stream =
       await navigator.mediaDevices
@@ -631,13 +843,18 @@ async function startCamera(){
           audio:false
         });
 
+
     $('video').srcObject =
       stream;
 
+
     await $('video').play();
 
+
     $('camera-message')
-      .classList.add('hidden');
+      .classList
+      .add('hidden');
+
 
     $('capture-btn').disabled =
       false;
@@ -645,7 +862,9 @@ async function startCamera(){
   }catch(error){
 
     $('camera-message')
-      .classList.remove('hidden');
+      .classList
+      .remove('hidden');
+
 
     $('camera-message').textContent =
       'Camera access failed. Open through HTTPS and allow camera permission.';
@@ -656,11 +875,13 @@ async function startCamera(){
 function sleep(milliseconds){
 
   return new Promise(
-    resolve =>
+    resolve => {
+
       setTimeout(
         resolve,
         milliseconds
-      )
+      );
+    }
   );
 }
 
@@ -675,13 +896,18 @@ async function captureWithCountdown(){
     return;
   }
 
-  countingDown = true;
+
+  countingDown =
+    true;
+
 
   $('capture-btn').disabled =
     true;
 
+
   const countdown =
     $('countdown');
+
 
   countdown
     .classList
@@ -693,21 +919,29 @@ async function captureWithCountdown(){
     countdown.textContent =
       number;
 
+
     await sleep(700);
   }
+
 
   countdown.textContent =
     '📸';
 
+
   await sleep(250);
 
+
   captureFrame();
+
 
   countdown
     .classList
     .add('hidden');
 
-  countingDown = false;
+
+  countingDown =
+    false;
+
 
   if(shot < 4){
 
@@ -729,8 +963,10 @@ function drawVideoCover(
   const videoWidth =
     video.videoWidth || 1280;
 
+
   const videoHeight =
     video.videoHeight || 960;
+
 
   const scale =
     Math.max(
@@ -738,11 +974,14 @@ function drawVideoCover(
       height / videoHeight
     );
 
+
   const drawWidth =
     videoWidth * scale;
 
+
   const drawHeight =
     videoHeight * scale;
+
 
   context.drawImage(
     video,
@@ -764,31 +1003,41 @@ function captureFrame(){
   const video =
     $('video');
 
+
   const overlay =
     $('character-overlay');
 
+
   const canvas =
     $('capture-canvas');
+
 
   const context =
     canvas.getContext('2d');
 
 
-  canvas.width = 900;
-  canvas.height = 1200;
+  canvas.width =
+    900;
+
+
+  canvas.height =
+    1200;
 
 
   context.save();
+
 
   context.translate(
     canvas.width,
     0
   );
 
+
   context.scale(
     -1,
     1
   );
+
 
   drawVideoCover(
     context,
@@ -799,23 +1048,33 @@ function captureFrame(){
     canvas.height
   );
 
+
   context.restore();
 
 
-  const index =
+  const poseIndex =
     Math.min(shot,3);
 
-  const side =
-    poseSides[index];
 
-  const maxWidth = 285;
-  const maxHeight = 690;
+  const side =
+    poseSides[poseIndex];
+
+
+  const maxWidth =
+    285;
+
+
+  const maxHeight =
+    690;
+
 
   const naturalWidth =
     overlay.naturalWidth || 1;
 
+
   const naturalHeight =
     overlay.naturalHeight || 1;
+
 
   const ratio =
     Math.min(
@@ -823,11 +1082,14 @@ function captureFrame(){
       maxHeight / naturalHeight
     );
 
+
   const overlayWidth =
     naturalWidth * ratio;
 
+
   const overlayHeight =
     naturalHeight * ratio;
+
 
   const overlayX =
     side === 'left'
@@ -835,6 +1097,7 @@ function captureFrame(){
       : canvas.width -
         overlayWidth -
         34;
+
 
   const overlayY =
     canvas.height -
@@ -851,22 +1114,27 @@ function captureFrame(){
   );
 
 
-  const url =
+  const photoUrl =
     canvas.toDataURL(
       'image/jpeg',
-      0.93
+      .93
     );
 
-  photos.push(url);
+
+  photos.push(photoUrl);
 
 
   const preview =
     document.createElement('img');
 
-  preview.src = url;
+
+  preview.src =
+    photoUrl;
+
 
   preview.alt =
     `Photo ${shot + 1}`;
+
 
   $('preview-grid')
     .appendChild(preview);
@@ -884,8 +1152,10 @@ function captureFrame(){
     $('shot-counter').textContent =
       '4 / 4';
 
+
     $('capture-btn').disabled =
       true;
+
 
     $('save-strip-btn')
       .classList
@@ -910,17 +1180,21 @@ function roundedRectPath(
       height / 2
     );
 
+
   context.beginPath();
+
 
   context.moveTo(
     x + adjustedRadius,
     y
   );
 
+
   context.lineTo(
     x + width - adjustedRadius,
     y
   );
+
 
   context.quadraticCurveTo(
     x + width,
@@ -929,10 +1203,12 @@ function roundedRectPath(
     y + adjustedRadius
   );
 
+
   context.lineTo(
     x + width,
     y + height - adjustedRadius
   );
+
 
   context.quadraticCurveTo(
     x + width,
@@ -941,10 +1217,12 @@ function roundedRectPath(
     y + height
   );
 
+
   context.lineTo(
     x + adjustedRadius,
     y + height
   );
+
 
   context.quadraticCurveTo(
     x,
@@ -953,10 +1231,12 @@ function roundedRectPath(
     y + height - adjustedRadius
   );
 
+
   context.lineTo(
     x,
     y + adjustedRadius
   );
+
 
   context.quadraticCurveTo(
     x,
@@ -964,12 +1244,13 @@ function roundedRectPath(
     x + adjustedRadius,
     y
   );
+
 
   context.closePath();
 }
 
 
-async function loadImage(source){
+function loadImage(source){
 
   return new Promise(
     (resolve,reject) => {
@@ -977,11 +1258,14 @@ async function loadImage(source){
       const image =
         new Image();
 
+
       image.onload =
         () => resolve(image);
 
+
       image.onerror =
         reject;
+
 
       image.src =
         source;
@@ -1000,14 +1284,22 @@ async function saveStrip(){
   const canvas =
     document.createElement('canvas');
 
+
   const context =
     canvas.getContext('2d');
 
 
-  const canvasWidth = 1000;
+  const canvasWidth =
+    1000;
 
-  const sideMargin = 48;
-  const gap = 22;
+
+  const sideMargin =
+    48;
+
+
+  const gap =
+    22;
+
 
   const photoWidth =
     (
@@ -1016,10 +1308,18 @@ async function saveStrip(){
       gap
     ) / 2;
 
-  const photoHeight = 600;
 
-  const headerHeight = 170;
-  const footerHeight = 160;
+  const photoHeight =
+    600;
+
+
+  const headerHeight =
+    170;
+
+
+  const footerHeight =
+    160;
+
 
   const canvasHeight =
     headerHeight +
@@ -1031,12 +1331,14 @@ async function saveStrip(){
   canvas.width =
     canvasWidth;
 
+
   canvas.height =
     canvasHeight;
 
 
   context.fillStyle =
     '#fbf4ff';
+
 
   context.fillRect(
     0,
@@ -1049,6 +1351,7 @@ async function saveStrip(){
   context.textAlign =
     'center';
 
+
   context.textBaseline =
     'middle';
 
@@ -1056,8 +1359,10 @@ async function saveStrip(){
   context.fillStyle =
     '#2b2340';
 
+
   context.font =
     'bold 50px -apple-system, BlinkMacSystemFont, sans-serif';
+
 
   context.fillText(
     'Which English Character Are You?',
@@ -1069,8 +1374,10 @@ async function saveStrip(){
   context.fillStyle =
     '#7c5ce7';
 
+
   context.font =
     'bold 36px -apple-system, BlinkMacSystemFont, sans-serif';
+
 
   context.fillText(
     `With ${characters[selected].name}`,
@@ -1133,6 +1440,7 @@ async function saveStrip(){
       context.fillStyle =
         '#d9ccef';
 
+
       roundedRectPath(
         context,
         photoX - 4,
@@ -1142,10 +1450,12 @@ async function saveStrip(){
         24
       );
 
+
       context.fill();
 
 
       context.save();
+
 
       roundedRectPath(
         context,
@@ -1155,6 +1465,7 @@ async function saveStrip(){
         photoHeight,
         20
       );
+
 
       context.clip();
 
@@ -1168,11 +1479,15 @@ async function saveStrip(){
           image.height
         );
 
+
       const drawWidth =
-        image.width * scale;
+        image.width *
+        scale;
+
 
       const drawHeight =
-        image.height * scale;
+        image.height *
+        scale;
 
 
       context.drawImage(
@@ -1203,8 +1518,10 @@ async function saveStrip(){
   context.fillStyle =
     '#70677f';
 
+
   context.font =
     'bold 29px -apple-system, BlinkMacSystemFont, sans-serif';
+
 
   context.fillText(
     'Learning English, Finding Myself',
@@ -1213,19 +1530,20 @@ async function saveStrip(){
   );
 
 
-  const blob =
+  const imageBlob =
     await new Promise(
-      resolve =>
+      resolve => {
 
         canvas.toBlob(
           resolve,
           'image/jpeg',
-          0.94
-        )
+          .94
+        );
+      }
     );
 
 
-  if(!blob){
+  if(!imageBlob){
     return;
   }
 
@@ -1234,9 +1552,9 @@ async function saveStrip(){
     `${characters[selected].folder}-4cut.jpg`;
 
 
-  const file =
+  const imageFile =
     new File(
-      [blob],
+      [imageBlob],
       fileName,
       {
         type:'image/jpeg'
@@ -1247,17 +1565,18 @@ async function saveStrip(){
   if(
     navigator.canShare &&
     navigator.canShare({
-      files:[file]
+      files:[imageFile]
     })
   ){
 
     try{
 
       await navigator.share({
-        files:[file],
+        files:[imageFile],
         title:
           'English Character Photo Booth'
       });
+
 
       return;
 
@@ -1273,31 +1592,41 @@ async function saveStrip(){
   }
 
 
-  const url =
-    URL.createObjectURL(blob);
+  const downloadUrl =
+    URL.createObjectURL(
+      imageBlob
+    );
 
 
-  const link =
+  const downloadLink =
     document.createElement('a');
 
 
-  link.href =
-    url;
+  downloadLink.href =
+    downloadUrl;
 
-  link.download =
+
+  downloadLink.download =
     fileName;
 
 
   document.body
-    .appendChild(link);
+    .appendChild(downloadLink);
 
-  link.click();
-  link.remove();
+
+  downloadLink.click();
+
+
+  downloadLink.remove();
 
 
   setTimeout(
-    () =>
-      URL.revokeObjectURL(url),
+    () => {
+
+      URL.revokeObjectURL(
+        downloadUrl
+      );
+    },
     1000
   );
 }
@@ -1310,11 +1639,15 @@ function stopCamera(){
     stream
       .getTracks()
       .forEach(
-        track =>
-          track.stop()
+        track => {
+
+          track.stop();
+        }
       );
 
-    stream = null;
+
+    stream =
+      null;
   }
 
 
@@ -1375,9 +1708,7 @@ $('back-result-btn')
 
       stopCamera();
 
-      screen(
-        'result-screen'
-      );
+      screen('result-screen');
     }
   );
 
