@@ -1,4 +1,4 @@
-const ASSET_VERSION = '20260731-final2';
+const ASSET_VERSION = '20260731-final5';
 
 const characters = {
   shakespeare: {
@@ -1423,3 +1423,4 @@ window.addEventListener(
 
 
 resetScores();
+
