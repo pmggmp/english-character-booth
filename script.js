@@ -1,3 +1,5 @@
+const ASSET_VERSION = '31';
+
 const characters = {
   shakespeare: {
     name: 'William Shakespeare',
@@ -154,6 +156,13 @@ function screen(id) {
   window.scrollTo({ top: 0, behavior: 'auto' });
 }
 
+function refreshStartCover() {
+  const startCover = document.querySelector('.final-cover-image');
+  if (startCover) {
+    startCover.src = `images1/start-cover.png?v=${ASSET_VERSION}`;
+  }
+}
+
 function startQuiz() {
   stopCamera();
   qIndex = 0;
@@ -222,7 +231,7 @@ function showResult() {
 
   $('result-name').textContent = character.name;
   $('result-description').textContent = character.korean;
-  $('result-image').src = `images1/${character.folder}/book.png?v=9`;
+  $('result-image').src = `images1/${character.folder}/book.png?v=${ASSET_VERSION}`;
   $('result-type').textContent = character.type;
   $('result-years').textContent = character.years;
   $('result-quote').textContent = character.quote;
@@ -256,13 +265,14 @@ function updatePose() {
   const side = poseSides[poseIndex];
 
   $('shot-counter').textContent = `${Math.min(shot + 1, 4)} / 4`;
-  overlay.src = `images1/${character.folder}/${poses[poseIndex]}?v=9`;
+  overlay.src = `images1/${character.folder}/${poses[poseIndex]}?v=${ASSET_VERSION}`;
 
-  overlay.style.left = side === 'left' ? '2%' : 'auto';
-  overlay.style.right = side === 'right' ? '2%' : 'auto';
-  overlay.style.bottom = '1%';
-  overlay.style.width = '38%';
+  overlay.style.left = side === 'left' ? '1%' : 'auto';
+  overlay.style.right = side === 'right' ? '1%' : 'auto';
+  overlay.style.bottom = '0';
+  overlay.style.width = '52%';
   overlay.style.maxWidth = 'none';
+  overlay.style.maxHeight = '82%';
   overlay.style.height = 'auto';
   overlay.style.objectFit = 'contain';
   overlay.style.objectPosition = side === 'left' ? 'bottom left' : 'bottom right';
@@ -312,7 +322,6 @@ async function captureWithCountdown() {
 
   countdown.textContent = '📸';
   await sleep(250);
-
   captureFrame();
 
   countdown.classList.add('hidden');
@@ -361,9 +370,19 @@ function getVisibleBounds(image) {
 
   for (let y = 0; y < tempCanvas.height; y += 2) {
     for (let x = 0; x < tempCanvas.width; x += 2) {
-      const alpha = pixels[(y * tempCanvas.width + x) * 4 + 3];
+      const position = (y * tempCanvas.width + x) * 4;
+      const red = pixels[position];
+      const green = pixels[position + 1];
+      const blue = pixels[position + 2];
+      const alpha = pixels[position + 3];
 
-      if (alpha > 12) {
+      const nearlyWhite = red > 245 && green > 245 && blue > 245;
+      const checkerGray =
+        Math.abs(red - green) < 5 &&
+        Math.abs(green - blue) < 5 &&
+        red > 195;
+
+      if (alpha > 15 && !nearlyWhite && !checkerGray) {
         if (x < left) left = x;
         if (x > right) right = x;
         if (y < top) top = y;
@@ -381,21 +400,25 @@ function getVisibleBounds(image) {
     };
   }
 
-  const padding = 6;
+  const padding = 8;
+  const croppedLeft = Math.max(0, left - padding);
+  const croppedTop = Math.max(0, top - padding);
+  const croppedRight = Math.min(tempCanvas.width, right + padding);
+  const croppedBottom = Math.min(tempCanvas.height, bottom + padding);
 
   return {
-    x: Math.max(0, left - padding),
-    y: Math.max(0, top - padding),
-    width: Math.min(tempCanvas.width - Math.max(0, left - padding), right - left + padding * 2),
-    height: Math.min(tempCanvas.height - Math.max(0, top - padding), bottom - top + padding * 2)
+    x: croppedLeft,
+    y: croppedTop,
+    width: croppedRight - croppedLeft,
+    height: croppedBottom - croppedTop
   };
 }
 
 function drawCharacter(context, overlay, side, canvasWidth, canvasHeight) {
   const bounds = getVisibleBounds(overlay);
 
- const targetWidth = canvasWidth * 0.52;
-const maximumHeight = canvasHeight * 0.82;
+  const targetWidth = canvasWidth * 0.52;
+  const maximumHeight = canvasHeight * 0.82;
 
   let drawWidth = targetWidth;
   let drawHeight = drawWidth * (bounds.height / bounds.width);
@@ -405,8 +428,8 @@ const maximumHeight = canvasHeight * 0.82;
     drawWidth = drawHeight * (bounds.width / bounds.height);
   }
 
-  const sideMargin = 24;
-  const bottomMargin = 18;
+  const sideMargin = 8;
+  const bottomMargin = 4;
 
   const drawX =
     side === 'left'
@@ -666,4 +689,7 @@ $('back-result-btn').addEventListener('click', () => {
 
 window.addEventListener('pagehide', stopCamera);
 
+document.addEventListener('DOMContentLoaded', refreshStartCover);
+
 resetScores();
+refreshStartCover();
