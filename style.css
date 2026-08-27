@@ -7,15 +7,15 @@
 position:absolute;
 z-index:3;
 bottom:1.5%;
-height:72%;
-width:auto;
-max-width:58%;
-max-height:72%;
+width:auto!important;
+height:auto;
+max-width:none!important;
+max-height:none;
 object-fit:contain;
 pointer-events:none;
 filter:drop-shadow(0 8px 9px rgba(0,0,0,.20))
 }.countdown{position:absolute;inset:0;z-index:6;display:flex;align-items:center;justify-content:center;color:#fff;font-size:min(34vw,190px);font-weight:900}.camera-message{position:absolute;inset:auto 18px 18px;z-index:4;padding:12px;border-radius:14px;background:rgba(0,0,0,.55);color:#fff;text-align:center}.preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}.preview-grid img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:16px}.save-strip-button{width:100%;margin-top:16px}
-@media(max-width:600px){.screen{padding:14px}.quiz-card,.analysis-card,.result-card{padding:22px}.result-buttons,.camera-buttons{grid-template-columns:1fr}.photo-card{padding:14px}.character-overlay{width:54%!important}}
+@media(max-width:600px){.screen{padding:14px}.quiz-card,.analysis-card,.result-card{padding:22px}.result-buttons,.camera-buttons{grid-template-columns:1fr}.photo-card{padding:14px}}
 
 
 /* FINAL: back controls always visible */
@@ -28,7 +28,7 @@ filter:drop-shadow(0 8px 9px rgba(0,0,0,.20))
 @media(max-width:600px){.photo-bottom-actions{grid-template-columns:1fr}#back-result-btn{min-width:100px;font-size:16px}}
 
 
-/* 20260827-mobile2: mobile start responsiveness */
+/* 20260827-allfix1: mobile start responsiveness */
 #start-screen,
 .start-cover-wrap,
 .cover-start-button {
