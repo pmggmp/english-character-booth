@@ -1,4 +1,4 @@
-const ASSET_VERSION = '20260827-allfix1';
+const ASSET_VERSION = '20260828-assets1';
 
 const characters = {
   shakespeare: {
@@ -211,38 +211,82 @@ const DEFAULT_POSE_PROFILES = [
  */
 const CHARACTER_POSE_PROFILES = {
   shakespeare: [
-    { height: 0.52, maxWidth: 0.45, side: 'right' },
-    { height: 0.64, maxWidth: 0.51, side: 'right' },
-    { height: 0.57, maxWidth: 0.49, side: 'left'  },
-    { height: 0.63, maxWidth: 0.51, side: 'left'  }
+    /* wave = theatre stage: deliberately smaller and off-center */
+    { height: 0.46, maxWidth: 0.40, side: 'right' },
+    /* book = standing with scroll */
+    { height: 0.62, maxWidth: 0.49, side: 'right' },
+    /* heart = seated at writing desk */
+    { height: 0.54, maxWidth: 0.47, side: 'left'  },
+    /* thumbsup = standing with skull */
+    { height: 0.61, maxWidth: 0.49, side: 'left'  }
+  ],
+
+  austen: [
+    /* seated tea table */
+    { height: 0.56, maxWidth: 0.48, side: 'right' },
+    /* reading, seated/upper body */
+    { height: 0.56, maxWidth: 0.47, side: 'right' },
+    /* seated writing desk */
+    { height: 0.53, maxWidth: 0.47, side: 'left'  },
+    /* seated with teacup */
+    { height: 0.55, maxWidth: 0.47, side: 'left'  }
   ],
 
   king: [
-    { height: 0.67, maxWidth: 0.52, side: 'right' },
-    { height: 0.66, maxWidth: 0.51, side: 'right' },
-    { height: 0.56, maxWidth: 0.47, side: 'left'  },
-    { height: 0.60, maxWidth: 0.49, side: 'left'  }
-  ],
-
-  hemingway: [
-    { height: 0.66, maxWidth: 0.51, side: 'right' },
-    { height: 0.58, maxWidth: 0.49, side: 'right' },
-    { height: 0.57, maxWidth: 0.48, side: 'left'  },
-    { height: 0.65, maxWidth: 0.51, side: 'left'  }
-  ],
-
-  christie: [
-    { height: 0.66, maxWidth: 0.51, side: 'right' },
-    { height: 0.58, maxWidth: 0.49, side: 'right' },
-    { height: 0.63, maxWidth: 0.50, side: 'left'  },
-    { height: 0.65, maxWidth: 0.51, side: 'left'  }
+    /* standing */
+    { height: 0.66, maxWidth: 0.50, side: 'right' },
+    /* standing thoughtful */
+    { height: 0.65, maxWidth: 0.49, side: 'right' },
+    /* podium: larger prop, reduce */
+    { height: 0.54, maxWidth: 0.45, side: 'left'  },
+    /* microphone/sign: medium prop */
+    { height: 0.58, maxWidth: 0.47, side: 'left'  }
   ],
 
   keller: [
-    { height: 0.65, maxWidth: 0.50, side: 'right' },
-    { height: 0.58, maxWidth: 0.49, side: 'right' },
-    { height: 0.64, maxWidth: 0.50, side: 'left'  },
-    { height: 0.64, maxWidth: 0.50, side: 'left'  }
+    /* seated chair */
+    { height: 0.57, maxWidth: 0.48, side: 'right' },
+    /* desk */
+    { height: 0.52, maxWidth: 0.46, side: 'right' },
+    /* standing */
+    { height: 0.63, maxWidth: 0.49, side: 'left'  },
+    /* standing with flower */
+    { height: 0.63, maxWidth: 0.49, side: 'left'  }
+  ],
+
+  dahl: [
+    { height: 0.64, maxWidth: 0.49, side: 'right' },
+    { height: 0.64, maxWidth: 0.49, side: 'right' },
+    /* seated thinking */
+    { height: 0.56, maxWidth: 0.47, side: 'left'  },
+    { height: 0.64, maxWidth: 0.49, side: 'left'  }
+  ],
+
+  angelou: [
+    { height: 0.62, maxWidth: 0.49, side: 'right' },
+    /* upper-body with book */
+    { height: 0.56, maxWidth: 0.47, side: 'right' },
+    /* upper-body heart pose */
+    { height: 0.56, maxWidth: 0.47, side: 'left'  },
+    /* desk/books */
+    { height: 0.51, maxWidth: 0.46, side: 'left'  }
+  ],
+
+  christie: [
+    { height: 0.64, maxWidth: 0.49, side: 'right' },
+    /* seated desk */
+    { height: 0.53, maxWidth: 0.47, side: 'right' },
+    { height: 0.61, maxWidth: 0.48, side: 'left'  },
+    { height: 0.62, maxWidth: 0.48, side: 'left'  }
+  ],
+
+  hemingway: [
+    { height: 0.64, maxWidth: 0.49, side: 'right' },
+    /* seated/desk-like composition */
+    { height: 0.54, maxWidth: 0.47, side: 'right' },
+    /* typewriter desk */
+    { height: 0.52, maxWidth: 0.46, side: 'left'  },
+    { height: 0.62, maxWidth: 0.48, side: 'left'  }
   ]
 };
 
@@ -1013,7 +1057,7 @@ function getVisibleBounds(image) {
           (y * tempCanvas.width + x) * 4 + 3
         ];
 
-      if (alpha > 12) {
+      if (alpha > 64) {
         if (x < left) {
           left = x;
         }
@@ -1046,7 +1090,7 @@ function getVisibleBounds(image) {
   }
 
   const padding =
-    6;
+    4;
 
   const cropX =
     Math.max(

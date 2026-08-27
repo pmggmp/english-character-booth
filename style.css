@@ -28,7 +28,7 @@ filter:drop-shadow(0 8px 9px rgba(0,0,0,.20))
 @media(max-width:600px){.photo-bottom-actions{grid-template-columns:1fr}#back-result-btn{min-width:100px;font-size:16px}}
 
 
-/* 20260827-allfix1: mobile start responsiveness */
+/* 20260828-assets1: mobile start responsiveness */
 #start-screen,
 .start-cover-wrap,
 .cover-start-button {
