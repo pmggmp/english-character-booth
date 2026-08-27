@@ -1,4 +1,4 @@
-const ASSET_VERSION = '20260826-fast1';
+const ASSET_VERSION = '20260827-mobile2';
 
 const characters = {
   shakespeare: {
@@ -246,6 +246,14 @@ function startQuiz() {
 
   resetScores();
 
+if (window.__startRequested) {
+  window.__appStarting = false;
+  startQuiz();
+} else {
+  window.__appStarting = false;
+}
+
+
   screen('quiz-screen');
   renderQuestion();
 }
@@ -440,6 +448,91 @@ function openBooth() {
 }
 
 
+function createCroppedCharacterDataUrl(image) {
+  const bounds = getVisibleBounds(image);
+
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+
+  canvas.width = Math.max(1, bounds.width);
+  canvas.height = Math.max(1, bounds.height);
+
+  context.clearRect(0, 0, canvas.width, canvas.height);
+
+  context.drawImage(
+    image,
+    bounds.x,
+    bounds.y,
+    bounds.width,
+    bounds.height,
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+  return canvas.toDataURL('image/png');
+}
+
+
+function loadNormalizedCharacter(overlay, source, side) {
+  const sourceImage = new Image();
+
+  sourceImage.onload = () => {
+    const croppedSource =
+      createCroppedCharacterDataUrl(sourceImage);
+
+    overlay.onload = () => {
+      overlay.style.left =
+        side === 'left'
+          ? '2%'
+          : 'auto';
+
+      overlay.style.right =
+        side === 'right'
+          ? '2%'
+          : 'auto';
+
+      overlay.style.bottom =
+        '1.5%';
+
+      /*
+       * 핵심:
+       * 원본 PNG 캔버스 크기가 아니라
+       * 실제 보이는 캐릭터 영역의 높이를 기준으로 맞춘다.
+       */
+      overlay.style.height =
+        '72%';
+
+      overlay.style.width =
+        'auto';
+
+      overlay.style.maxWidth =
+        '58%';
+
+      overlay.style.maxHeight =
+        '72%';
+
+      overlay.style.objectFit =
+        'contain';
+
+      overlay.style.objectPosition =
+        side === 'left'
+          ? 'bottom left'
+          : 'bottom right';
+
+      overlay.onload = null;
+    };
+
+    overlay.src =
+      croppedSource;
+  };
+
+  sourceImage.src =
+    source;
+}
+
+
 function updatePose() {
   const character =
     characters[selected];
@@ -459,38 +552,14 @@ function updatePose() {
   $('shot-counter').textContent =
     `${Math.min(shot + 1, 4)} / 4`;
 
-  overlay.src =
+  const source =
     `images1/${character.folder}/${poses[poseIndex]}?v=${ASSET_VERSION}`;
 
-  overlay.style.left =
-    side === 'left'
-      ? '2%'
-      : 'auto';
-
-  overlay.style.right =
-    side === 'right'
-      ? '2%'
-      : 'auto';
-
-  overlay.style.bottom =
-    '1%';
-
-  overlay.style.width =
-    '38%';
-
-  overlay.style.maxWidth =
-    'none';
-
-  overlay.style.height =
-    'auto';
-
-  overlay.style.objectFit =
-    'contain';
-
-  overlay.style.objectPosition =
-    side === 'left'
-      ? 'bottom left'
-      : 'bottom right';
+  loadNormalizedCharacter(
+    overlay,
+    source,
+    side
+  );
 }
 
 
@@ -767,26 +836,29 @@ function drawCharacter(
   const bounds =
     getVisibleBounds(overlay);
 
-  const targetWidth =
-    canvasWidth * 0.35;
+  /*
+   * 저장 사진에서도 캐릭터 '실제 보이는 높이'를 동일하게 맞춤.
+   */
+  const targetHeight =
+    canvasHeight * 0.72;
 
-  const maximumHeight =
-    canvasHeight * 0.70;
-
-  let drawWidth =
-    targetWidth;
+  const maximumWidth =
+    canvasWidth * 0.58;
 
   let drawHeight =
-    drawWidth *
-    (bounds.height / bounds.width);
+    targetHeight;
 
-  if (drawHeight > maximumHeight) {
-    drawHeight =
-      maximumHeight;
+  let drawWidth =
+    drawHeight *
+    (bounds.width / bounds.height);
 
+  if (drawWidth > maximumWidth) {
     drawWidth =
-      drawHeight *
-      (bounds.width / bounds.height);
+      maximumWidth;
+
+    drawHeight =
+      drawWidth *
+      (bounds.height / bounds.width);
   }
 
   const sideMargin =
@@ -809,12 +881,10 @@ function drawCharacter(
 
   context.drawImage(
     overlay,
-
     bounds.x,
     bounds.y,
     bounds.width,
     bounds.height,
-
     drawX,
     drawY,
     drawWidth,
@@ -1369,11 +1439,6 @@ function connectButton(
   }
 }
 
-
-connectButton(
-  'start-btn',
-  startQuiz
-);
 
 connectButton(
   'retry-btn',
