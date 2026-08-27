@@ -1,4 +1,4 @@
-const ASSET_VERSION = '20260827-posebalance5';
+const ASSET_VERSION = '20260827-allfix1';
 
 const characters = {
   shakespeare: {
@@ -196,6 +196,86 @@ const poseSides = [
   'left'
 ];
 
+
+const DEFAULT_POSE_PROFILES = [
+  { height: 0.68, maxWidth: 0.54, side: 'right' },
+  { height: 0.61, maxWidth: 0.52, side: 'right' },
+  { height: 0.63, maxWidth: 0.52, side: 'left'  },
+  { height: 0.67, maxWidth: 0.54, side: 'left'  }
+];
+
+
+/*
+ * 큰 소품/앉은 포즈만 살짝 줄인다.
+ * 셰익스피어 연극 무대는 더 작게 하고 오른쪽 아래로 붙인다.
+ */
+const CHARACTER_POSE_PROFILES = {
+  shakespeare: [
+    { height: 0.52, maxWidth: 0.45, side: 'right' },
+    { height: 0.64, maxWidth: 0.51, side: 'right' },
+    { height: 0.57, maxWidth: 0.49, side: 'left'  },
+    { height: 0.63, maxWidth: 0.51, side: 'left'  }
+  ],
+
+  king: [
+    { height: 0.67, maxWidth: 0.52, side: 'right' },
+    { height: 0.66, maxWidth: 0.51, side: 'right' },
+    { height: 0.56, maxWidth: 0.47, side: 'left'  },
+    { height: 0.60, maxWidth: 0.49, side: 'left'  }
+  ],
+
+  hemingway: [
+    { height: 0.66, maxWidth: 0.51, side: 'right' },
+    { height: 0.58, maxWidth: 0.49, side: 'right' },
+    { height: 0.57, maxWidth: 0.48, side: 'left'  },
+    { height: 0.65, maxWidth: 0.51, side: 'left'  }
+  ],
+
+  christie: [
+    { height: 0.66, maxWidth: 0.51, side: 'right' },
+    { height: 0.58, maxWidth: 0.49, side: 'right' },
+    { height: 0.63, maxWidth: 0.50, side: 'left'  },
+    { height: 0.65, maxWidth: 0.51, side: 'left'  }
+  ],
+
+  keller: [
+    { height: 0.65, maxWidth: 0.50, side: 'right' },
+    { height: 0.58, maxWidth: 0.49, side: 'right' },
+    { height: 0.64, maxWidth: 0.50, side: 'left'  },
+    { height: 0.64, maxWidth: 0.50, side: 'left'  }
+  ]
+};
+
+
+function getPoseProfile(
+  characterKey,
+  poseIndex
+) {
+  const custom =
+    CHARACTER_POSE_PROFILES[
+      characterKey
+    ];
+
+  const profile =
+    custom &&
+    custom[poseIndex]
+      ? custom[poseIndex]
+      : DEFAULT_POSE_PROFILES[
+          poseIndex
+        ];
+
+  return {
+    height:
+      profile.height,
+
+    maxWidth:
+      profile.maxWidth,
+
+    side:
+      profile.side
+  };
+}
+
 const $ = id => document.getElementById(id);
 
 
@@ -211,6 +291,92 @@ let countingDown = false;
 function resetScores() {
   scores = Object.fromEntries(
     Object.keys(characters).map(key => [key, 0])
+  );
+}
+
+
+const RESULT_HISTORY_KEY =
+  'englishCharacterRecentResultsV2';
+
+
+const RESULT_OPPORTUNITY =
+  (() => {
+    const totals =
+      Object.fromEntries(
+        Object.keys(characters)
+          .map(key => [key, 0])
+      );
+
+    questions.forEach(question => {
+      const answers =
+        question[2];
+
+      answers.forEach(answer => {
+        const targets =
+          answer[2];
+
+        targets.forEach(
+          (key, index) => {
+            totals[key] +=
+              index === 0 ? 2 : 1;
+          }
+        );
+      });
+    });
+
+    return totals;
+  })();
+
+
+function getRecentResults() {
+  try {
+    const stored =
+      JSON.parse(
+        localStorage.getItem(
+          RESULT_HISTORY_KEY
+        ) || '[]'
+      );
+
+    return Array.isArray(stored)
+      ? stored.slice(0, 4)
+      : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+
+function rememberResult(key) {
+  try {
+    const recent =
+      getRecentResults();
+
+    recent.unshift(key);
+
+    localStorage.setItem(
+      RESULT_HISTORY_KEY,
+      JSON.stringify(
+        recent.slice(0, 4)
+      )
+    );
+  } catch (error) {
+    // Private browsing / storage blocked:
+    // result selection should still work.
+  }
+}
+
+
+function normalizedResultScores() {
+  return Object.fromEntries(
+    Object.keys(scores).map(key => {
+      const opportunity =
+        RESULT_OPPORTUNITY[key] || 1;
+
+      return [
+        key,
+        scores[key] / opportunity
+      ];
+    })
   );
 }
 
@@ -248,6 +414,9 @@ function startQuiz() {
 
   screen('quiz-screen');
   renderQuestion();
+
+  window.__startRequested = false;
+  window.__appStarting = false;
 }
 
 
@@ -324,18 +493,110 @@ function choose(targets) {
 
 
 function selectResult() {
-  const maximumScore =
-    Math.max(...Object.values(scores));
+  const normalized =
+    normalizedResultScores();
 
-  const finalists =
-    Object.keys(scores).filter(
-      key => scores[key] === maximumScore
+  const bestScore =
+    Math.max(
+      ...Object.values(normalized)
     );
 
+  /*
+   * 답변 성향은 유지하되, 최고점과 매우 가까운
+   * 캐릭터들도 후보에 포함한다.
+   */
+  let candidates =
+    Object.keys(normalized)
+      .filter(
+        key =>
+          normalized[key] >=
+          bestScore - 0.075
+      );
+
+  const recent =
+    getRecentResults();
+
+  /*
+   * 같은 인물이 연속해서 두 번 나왔다면,
+   * 비슷한 점수의 다른 후보가 있을 때만 반복을 막는다.
+   */
+  if (
+    recent.length >= 2 &&
+    recent[0] === recent[1] &&
+    candidates.length > 1
+  ) {
+    const alternatives =
+      candidates.filter(
+        key => key !== recent[0]
+      );
+
+    if (alternatives.length) {
+      candidates =
+        alternatives;
+    }
+  }
+
+  const adjusted =
+    candidates.map(key => {
+      let value =
+        normalized[key];
+
+      if (recent[0] === key) {
+        value -= 0.055;
+      }
+
+      if (recent[1] === key) {
+        value -= 0.025;
+      }
+
+      return {
+        key,
+        value
+      };
+    });
+
+  const minimum =
+    Math.min(
+      ...adjusted.map(item => item.value)
+    );
+
+  const weighted =
+    adjusted.map(item => ({
+      key: item.key,
+      weight:
+        1 +
+        Math.max(
+          0,
+          (item.value - minimum) * 18
+        )
+    }));
+
+  const totalWeight =
+    weighted.reduce(
+      (sum, item) =>
+        sum + item.weight,
+      0
+    );
+
+  let pick =
+    Math.random() * totalWeight;
+
   selected =
-    finalists[
-      Math.floor(Math.random() * finalists.length)
-    ];
+    weighted[
+      weighted.length - 1
+    ].key;
+
+  for (const item of weighted) {
+    pick -= item.weight;
+
+    if (pick <= 0) {
+      selected =
+        item.key;
+      break;
+    }
+  }
+
+  rememberResult(selected);
 }
 
 
@@ -440,143 +701,116 @@ function openBooth() {
 }
 
 
-function fitLiveCharacter() {
-  const overlay = $('character-overlay');
-  const stage = document.querySelector('.camera-stage');
+function createCroppedCharacterDataUrl(image) {
+  const bounds = getVisibleBounds(image);
 
-  if (
-    !overlay ||
-    !stage ||
-    !overlay.complete ||
-    !overlay.naturalWidth ||
-    !overlay.naturalHeight
-  ) {
-    return;
-  }
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
 
-  const bounds = getVisibleBounds(overlay);
-  const stageWidth = stage.clientWidth;
-  const stageHeight = stage.clientHeight;
+  canvas.width = Math.max(1, bounds.width);
+  canvas.height = Math.max(1, bounds.height);
 
-  const poseIndex =
-    Math.min(shot, poses.length - 1);
+  context.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Balanced per-pose sizing.
-  // Standing poses return to the earlier preferred size.
-  // Sitting / desk / large-prop poses are deliberately smaller.
-  const targetHeightRatios = [0.42, 0.35, 0.32, 0.42];
-  const maxWidthRatios = [0.58, 0.52, 0.50, 0.58];
-
-  const targetVisibleHeight =
-    stageHeight * targetHeightRatios[poseIndex];
-
-  const maximumVisibleWidth =
-    stageWidth * maxWidthRatios[poseIndex];
-
-  const scaleByHeight =
-    targetVisibleHeight / bounds.height;
-
-  const scaleByWidth =
-    maximumVisibleWidth / bounds.width;
-
-  const scale =
-    Math.min(scaleByHeight, scaleByWidth);
-
-  const elementWidth =
-    overlay.naturalWidth * scale;
-
-  const elementHeight =
-    overlay.naturalHeight * scale;
-
-  overlay.style.setProperty(
-    'width',
-    `${elementWidth}px`,
-    'important'
+  context.drawImage(
+    image,
+    bounds.x,
+    bounds.y,
+    bounds.width,
+    bounds.height,
+    0,
+    0,
+    canvas.width,
+    canvas.height
   );
 
-  overlay.style.setProperty(
-    'height',
-    `${elementHeight}px`,
-    'important'
-  );
-
-  overlay.style.setProperty(
-    'max-width',
-    'none',
-    'important'
-  );
-
-  overlay.style.setProperty(
-    'max-height',
-    'none',
-    'important'
-  );
-
-  const side =
-    overlay.dataset.side || 'right';
-
-  const leftTransparent =
-    bounds.x * scale;
-
-  const rightTransparent =
-    (
-      overlay.naturalWidth -
-      bounds.x -
-      bounds.width
-    ) * scale;
-
-  const bottomTransparent =
-    (
-      overlay.naturalHeight -
-      bounds.y -
-      bounds.height
-    ) * scale;
-
-  const sideMargin =
-    stageWidth * 0.015;
-
-  const bottomMargin =
-    stageHeight * 0.01;
-
-  overlay.style.left = 'auto';
-  overlay.style.right = 'auto';
-
-  if (side === 'left') {
-    overlay.style.left =
-      `${sideMargin - leftTransparent}px`;
-  } else {
-    overlay.style.right =
-      `${sideMargin - rightTransparent}px`;
-  }
-
-  overlay.style.bottom =
-    `${bottomMargin - bottomTransparent}px`;
+  return canvas.toDataURL('image/png');
 }
 
-function updatePose() {
-  const character = characters[selected];
-  const poseIndex = Math.min(shot, poses.length - 1);
-  const overlay = $('character-overlay');
-  const side = poseSides[poseIndex];
 
-  $('shot-counter').textContent = `${Math.min(shot + 1, 4)} / 4`;
+function loadNormalizedCharacter(overlay, source, profile) {
+  const sourceImage = new Image();
 
-  overlay.dataset.side = side;
-  overlay.style.left = 'auto';
-  overlay.style.right = 'auto';
-  overlay.style.bottom = '0';
-  overlay.style.objectFit = 'contain';
-  overlay.style.objectPosition = side === 'left' ? 'bottom left' : 'bottom right';
+  sourceImage.onload = () => {
+    const croppedSource =
+      createCroppedCharacterDataUrl(sourceImage);
 
-  overlay.onload = () => {
-    fitLiveCharacter();
+    overlay.onload = () => {
+      overlay.style.left =
+        profile.side === 'left'
+          ? '2%'
+          : 'auto';
+
+      overlay.style.right =
+        profile.side === 'right'
+          ? '2%'
+          : 'auto';
+
+      overlay.style.bottom =
+        '1.5%';
+
+      overlay.style.height =
+        `${profile.height * 100}%`;
+
+      overlay.style.width =
+        'auto';
+
+      overlay.style.maxWidth =
+        `${profile.maxWidth * 100}%`;
+
+      overlay.style.maxHeight =
+        `${profile.height * 100}%`;
+
+      overlay.style.objectFit =
+        'contain';
+
+      overlay.style.objectPosition =
+        profile.side === 'left'
+          ? 'bottom left'
+          : 'bottom right';
+
+      overlay.onload = null;
+    };
+
+    overlay.src =
+      croppedSource;
   };
 
-  overlay.src = `images1/${character.folder}/${poses[poseIndex]}?v=${ASSET_VERSION}`;
+  sourceImage.src =
+    source;
+}
 
-  if (overlay.complete) {
-    fitLiveCharacter();
-  }
+
+function updatePose() {
+  const character =
+    characters[selected];
+
+  const poseIndex =
+    Math.min(
+      shot,
+      poses.length - 1
+    );
+
+  const overlay =
+    $('character-overlay');
+
+  const profile =
+    getPoseProfile(
+      selected,
+      poseIndex
+    );
+
+  $('shot-counter').textContent =
+    `${Math.min(shot + 1, 4)} / 4`;
+
+  const source =
+    `images1/${character.folder}/${poses[poseIndex]}?v=${ASSET_VERSION}`;
+
+  loadNormalizedCharacter(
+    overlay,
+    source,
+    profile
+  );
 }
 
 
@@ -779,7 +1013,7 @@ function getVisibleBounds(image) {
           (y * tempCanvas.width + x) * 4 + 3
         ];
 
-      if (alpha > 64) {
+      if (alpha > 12) {
         if (x < left) {
           left = x;
         }
@@ -846,41 +1080,63 @@ function getVisibleBounds(image) {
 function drawCharacter(
   context,
   overlay,
-  side,
+  profile,
   canvasWidth,
   canvasHeight
 ) {
-  const stage = document.querySelector('.camera-stage');
-  if (!stage) return;
+  const bounds =
+    getVisibleBounds(overlay);
 
-  const stageRect = stage.getBoundingClientRect();
-  const overlayRect = overlay.getBoundingClientRect();
-  const bounds = getVisibleBounds(overlay);
-  const naturalWidth = overlay.naturalWidth || overlay.width;
-  const naturalHeight = overlay.naturalHeight || overlay.height;
+  const targetHeight =
+    canvasHeight * profile.height;
 
-  if (!stageRect.width || !stageRect.height || !naturalWidth || !naturalHeight) {
-    return;
+  const maximumWidth =
+    canvasWidth * profile.maxWidth;
+
+  let drawHeight =
+    targetHeight;
+
+  let drawWidth =
+    drawHeight *
+    (bounds.width / bounds.height);
+
+  if (drawWidth > maximumWidth) {
+    drawWidth =
+      maximumWidth;
+
+    drawHeight =
+      drawWidth *
+      (bounds.height / bounds.width);
   }
 
-  const imageScaleX = overlayRect.width / naturalWidth;
-  const imageScaleY = overlayRect.height / naturalHeight;
+  const sideMargin =
+    24;
 
-  const visibleX = overlayRect.left - stageRect.left + bounds.x * imageScaleX;
-  const visibleY = overlayRect.top - stageRect.top + bounds.y * imageScaleY;
-  const visibleWidth = bounds.width * imageScaleX;
-  const visibleHeight = bounds.height * imageScaleY;
+  const bottomMargin =
+    18;
 
-  const canvasScaleX = canvasWidth / stageRect.width;
-  const canvasScaleY = canvasHeight / stageRect.height;
+  const drawX =
+    profile.side === 'left'
+      ? sideMargin
+      : canvasWidth -
+        drawWidth -
+        sideMargin;
+
+  const drawY =
+    canvasHeight -
+    drawHeight -
+    bottomMargin;
 
   context.drawImage(
     overlay,
-    bounds.x, bounds.y, bounds.width, bounds.height,
-    visibleX * canvasScaleX,
-    visibleY * canvasScaleY,
-    visibleWidth * canvasScaleX,
-    visibleHeight * canvasScaleY
+    bounds.x,
+    bounds.y,
+    bounds.width,
+    bounds.height,
+    drawX,
+    drawY,
+    drawWidth,
+    drawHeight
   );
 }
 
@@ -930,13 +1186,16 @@ function captureFrame() {
   const poseIndex =
     Math.min(shot, 3);
 
-  const side =
-    poseSides[poseIndex];
+  const profile =
+    getPoseProfile(
+      selected,
+      poseIndex
+    );
 
   drawCharacter(
     context,
     overlay,
-    side,
+    profile,
     canvas.width,
     canvas.height
   );
@@ -1433,11 +1692,6 @@ function connectButton(
 
 
 connectButton(
-  'start-btn',
-  startQuiz
-);
-
-connectButton(
   'retry-btn',
   startQuiz
 );
@@ -1485,3 +1739,11 @@ window.addEventListener(
 
 
 resetScores();
+
+window.startQuiz =
+  startQuiz;
+
+if (window.__startRequested) {
+  window.__appStarting = true;
+  startQuiz();
+}
