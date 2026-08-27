@@ -1,4 +1,4 @@
-const ASSET_VERSION = '20260827-mobile2';
+const ASSET_VERSION = '20260827-size1';
 
 const characters = {
   shakespeare: {
@@ -246,14 +246,6 @@ function startQuiz() {
 
   resetScores();
 
-if (window.__startRequested) {
-  window.__appStarting = false;
-  startQuiz();
-} else {
-  window.__appStarting = false;
-}
-
-
   screen('quiz-screen');
   renderQuestion();
 }
@@ -448,118 +440,57 @@ function openBooth() {
 }
 
 
-function createCroppedCharacterDataUrl(image) {
-  const bounds = getVisibleBounds(image);
+function fitLiveCharacter() {
+  const overlay = $('character-overlay');
+  const stage = document.querySelector('.camera-stage');
 
-  const canvas = document.createElement('canvas');
-  const context = canvas.getContext('2d');
+  if (!overlay || !stage || !overlay.complete || !overlay.naturalWidth || !overlay.naturalHeight) {
+    return;
+  }
 
-  canvas.width = Math.max(1, bounds.width);
-  canvas.height = Math.max(1, bounds.height);
+  const bounds = getVisibleBounds(overlay);
+  const stageWidth = stage.clientWidth;
+  const stageHeight = stage.clientHeight;
 
-  context.clearRect(0, 0, canvas.width, canvas.height);
+  const targetVisibleHeight = stageHeight * 0.34;
+  const maximumVisibleWidth = stageWidth * 0.50;
 
-  context.drawImage(
-    image,
-    bounds.x,
-    bounds.y,
-    bounds.width,
-    bounds.height,
-    0,
-    0,
-    canvas.width,
-    canvas.height
-  );
+  const scaleByHeight = targetVisibleHeight / bounds.height;
+  const scaleByWidth = maximumVisibleWidth / bounds.width;
+  const scale = Math.min(scaleByHeight, scaleByWidth);
 
-  return canvas.toDataURL('image/png');
+  const elementWidth = overlay.naturalWidth * scale;
+  const elementHeight = overlay.naturalHeight * scale;
+
+  overlay.style.setProperty('width', `${elementWidth}px`, 'important');
+  overlay.style.setProperty('height', `${elementHeight}px`, 'important');
+  overlay.style.setProperty('max-width', 'none', 'important');
+  overlay.style.setProperty('max-height', 'none', 'important');
 }
-
-
-function loadNormalizedCharacter(overlay, source, side) {
-  const sourceImage = new Image();
-
-  sourceImage.onload = () => {
-    const croppedSource =
-      createCroppedCharacterDataUrl(sourceImage);
-
-    overlay.onload = () => {
-      overlay.style.left =
-        side === 'left'
-          ? '2%'
-          : 'auto';
-
-      overlay.style.right =
-        side === 'right'
-          ? '2%'
-          : 'auto';
-
-      overlay.style.bottom =
-        '1.5%';
-
-      /*
-       * 핵심:
-       * 원본 PNG 캔버스 크기가 아니라
-       * 실제 보이는 캐릭터 영역의 높이를 기준으로 맞춘다.
-       */
-      overlay.style.height =
-        '72%';
-
-      overlay.style.width =
-        'auto';
-
-      overlay.style.maxWidth =
-        '58%';
-
-      overlay.style.maxHeight =
-        '72%';
-
-      overlay.style.objectFit =
-        'contain';
-
-      overlay.style.objectPosition =
-        side === 'left'
-          ? 'bottom left'
-          : 'bottom right';
-
-      overlay.onload = null;
-    };
-
-    overlay.src =
-      croppedSource;
-  };
-
-  sourceImage.src =
-    source;
-}
-
 
 function updatePose() {
-  const character =
-    characters[selected];
+  const character = characters[selected];
+  const poseIndex = Math.min(shot, poses.length - 1);
+  const overlay = $('character-overlay');
+  const side = poseSides[poseIndex];
 
-  const poseIndex =
-    Math.min(
-      shot,
-      poses.length - 1
-    );
+  $('shot-counter').textContent = `${Math.min(shot + 1, 4)} / 4`;
 
-  const overlay =
-    $('character-overlay');
+  overlay.style.left = side === 'left' ? '2%' : 'auto';
+  overlay.style.right = side === 'right' ? '2%' : 'auto';
+  overlay.style.bottom = '1%';
+  overlay.style.objectFit = 'contain';
+  overlay.style.objectPosition = side === 'left' ? 'bottom left' : 'bottom right';
 
-  const side =
-    poseSides[poseIndex];
+  overlay.onload = () => {
+    fitLiveCharacter();
+  };
 
-  $('shot-counter').textContent =
-    `${Math.min(shot + 1, 4)} / 4`;
+  overlay.src = `images1/${character.folder}/${poses[poseIndex]}?v=${ASSET_VERSION}`;
 
-  const source =
-    `images1/${character.folder}/${poses[poseIndex]}?v=${ASSET_VERSION}`;
-
-  loadNormalizedCharacter(
-    overlay,
-    source,
-    side
-  );
+  if (overlay.complete) {
+    fitLiveCharacter();
+  }
 }
 
 
@@ -833,62 +764,37 @@ function drawCharacter(
   canvasWidth,
   canvasHeight
 ) {
-  const bounds =
-    getVisibleBounds(overlay);
+  const stage = document.querySelector('.camera-stage');
+  if (!stage) return;
 
-  /*
-   * 저장 사진에서도 캐릭터 '실제 보이는 높이'를 동일하게 맞춤.
-   */
-  const targetHeight =
-    canvasHeight * 0.72;
+  const stageRect = stage.getBoundingClientRect();
+  const overlayRect = overlay.getBoundingClientRect();
+  const bounds = getVisibleBounds(overlay);
+  const naturalWidth = overlay.naturalWidth || overlay.width;
+  const naturalHeight = overlay.naturalHeight || overlay.height;
 
-  const maximumWidth =
-    canvasWidth * 0.58;
-
-  let drawHeight =
-    targetHeight;
-
-  let drawWidth =
-    drawHeight *
-    (bounds.width / bounds.height);
-
-  if (drawWidth > maximumWidth) {
-    drawWidth =
-      maximumWidth;
-
-    drawHeight =
-      drawWidth *
-      (bounds.height / bounds.width);
+  if (!stageRect.width || !stageRect.height || !naturalWidth || !naturalHeight) {
+    return;
   }
 
-  const sideMargin =
-    24;
+  const imageScaleX = overlayRect.width / naturalWidth;
+  const imageScaleY = overlayRect.height / naturalHeight;
 
-  const bottomMargin =
-    18;
+  const visibleX = overlayRect.left - stageRect.left + bounds.x * imageScaleX;
+  const visibleY = overlayRect.top - stageRect.top + bounds.y * imageScaleY;
+  const visibleWidth = bounds.width * imageScaleX;
+  const visibleHeight = bounds.height * imageScaleY;
 
-  const drawX =
-    side === 'left'
-      ? sideMargin
-      : canvasWidth -
-        drawWidth -
-        sideMargin;
-
-  const drawY =
-    canvasHeight -
-    drawHeight -
-    bottomMargin;
+  const canvasScaleX = canvasWidth / stageRect.width;
+  const canvasScaleY = canvasHeight / stageRect.height;
 
   context.drawImage(
     overlay,
-    bounds.x,
-    bounds.y,
-    bounds.width,
-    bounds.height,
-    drawX,
-    drawY,
-    drawWidth,
-    drawHeight
+    bounds.x, bounds.y, bounds.width, bounds.height,
+    visibleX * canvasScaleX,
+    visibleY * canvasScaleY,
+    visibleWidth * canvasScaleX,
+    visibleHeight * canvasScaleY
   );
 }
 
@@ -1439,6 +1345,11 @@ function connectButton(
   }
 }
 
+
+connectButton(
+  'start-btn',
+  startQuiz
+);
 
 connectButton(
   'retry-btn',
