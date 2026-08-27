@@ -1,4 +1,4 @@
-const ASSET_VERSION = '20260827-possize3';
+const ASSET_VERSION = '20260827-largeedge4';
 
 const characters = {
   shakespeare: {
@@ -460,8 +460,8 @@ function fitLiveCharacter() {
 
   // Larger than before: visible character is about 42% of the camera height.
   // Wide/sitting poses are allowed more width so they do not shrink too much.
-  const targetVisibleHeight = stageHeight * 0.42;
-  const maximumVisibleWidth = stageWidth * 0.62;
+  const targetVisibleHeight = stageHeight * 0.56;
+  const maximumVisibleWidth = stageWidth * 0.78;
 
   const scaleByHeight =
     targetVisibleHeight / bounds.height;
@@ -469,8 +469,14 @@ function fitLiveCharacter() {
   const scaleByWidth =
     maximumVisibleWidth / bounds.width;
 
+  const poseIndex =
+    Math.min(shot, poses.length - 1);
+
+  const poseBoosts = [1.08, 1.12, 1.10, 1.10];
+
   const scale =
-    Math.min(scaleByHeight, scaleByWidth);
+    Math.min(scaleByHeight, scaleByWidth) *
+    poseBoosts[poseIndex];
 
   const elementWidth =
     overlay.naturalWidth * scale;
@@ -525,10 +531,10 @@ function fitLiveCharacter() {
     ) * scale;
 
   const sideMargin =
-    stageWidth * 0.025;
+    stageWidth * 0.005;
 
   const bottomMargin =
-    stageHeight * 0.015;
+    stageHeight * 0.005;
 
   overlay.style.left = 'auto';
   overlay.style.right = 'auto';
@@ -771,7 +777,7 @@ function getVisibleBounds(image) {
           (y * tempCanvas.width + x) * 4 + 3
         ];
 
-      if (alpha > 12) {
+      if (alpha > 64) {
         if (x < left) {
           left = x;
         }
