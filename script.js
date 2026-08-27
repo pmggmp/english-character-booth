@@ -1,4 +1,4 @@
-const ASSET_VERSION = '20260731-final5';
+const ASSET_VERSION = '20260826-fast1';
 
 const characters = {
   shakespeare: {
