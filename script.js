@@ -1,4 +1,4 @@
-const ASSET_VERSION = '20260827-size1';
+const ASSET_VERSION = '20260827-possize3';
 
 const characters = {
   shakespeare: {
@@ -444,7 +444,13 @@ function fitLiveCharacter() {
   const overlay = $('character-overlay');
   const stage = document.querySelector('.camera-stage');
 
-  if (!overlay || !stage || !overlay.complete || !overlay.naturalWidth || !overlay.naturalHeight) {
+  if (
+    !overlay ||
+    !stage ||
+    !overlay.complete ||
+    !overlay.naturalWidth ||
+    !overlay.naturalHeight
+  ) {
     return;
   }
 
@@ -452,20 +458,91 @@ function fitLiveCharacter() {
   const stageWidth = stage.clientWidth;
   const stageHeight = stage.clientHeight;
 
-  const targetVisibleHeight = stageHeight * 0.34;
-  const maximumVisibleWidth = stageWidth * 0.50;
+  // Larger than before: visible character is about 42% of the camera height.
+  // Wide/sitting poses are allowed more width so they do not shrink too much.
+  const targetVisibleHeight = stageHeight * 0.42;
+  const maximumVisibleWidth = stageWidth * 0.62;
 
-  const scaleByHeight = targetVisibleHeight / bounds.height;
-  const scaleByWidth = maximumVisibleWidth / bounds.width;
-  const scale = Math.min(scaleByHeight, scaleByWidth);
+  const scaleByHeight =
+    targetVisibleHeight / bounds.height;
 
-  const elementWidth = overlay.naturalWidth * scale;
-  const elementHeight = overlay.naturalHeight * scale;
+  const scaleByWidth =
+    maximumVisibleWidth / bounds.width;
 
-  overlay.style.setProperty('width', `${elementWidth}px`, 'important');
-  overlay.style.setProperty('height', `${elementHeight}px`, 'important');
-  overlay.style.setProperty('max-width', 'none', 'important');
-  overlay.style.setProperty('max-height', 'none', 'important');
+  const scale =
+    Math.min(scaleByHeight, scaleByWidth);
+
+  const elementWidth =
+    overlay.naturalWidth * scale;
+
+  const elementHeight =
+    overlay.naturalHeight * scale;
+
+  overlay.style.setProperty(
+    'width',
+    `${elementWidth}px`,
+    'important'
+  );
+
+  overlay.style.setProperty(
+    'height',
+    `${elementHeight}px`,
+    'important'
+  );
+
+  overlay.style.setProperty(
+    'max-width',
+    'none',
+    'important'
+  );
+
+  overlay.style.setProperty(
+    'max-height',
+    'none',
+    'important'
+  );
+
+  const side =
+    overlay.dataset.side || 'right';
+
+  // IMPORTANT:
+  // Position the VISIBLE character, not the transparent PNG box.
+  const leftTransparent =
+    bounds.x * scale;
+
+  const rightTransparent =
+    (
+      overlay.naturalWidth -
+      bounds.x -
+      bounds.width
+    ) * scale;
+
+  const bottomTransparent =
+    (
+      overlay.naturalHeight -
+      bounds.y -
+      bounds.height
+    ) * scale;
+
+  const sideMargin =
+    stageWidth * 0.025;
+
+  const bottomMargin =
+    stageHeight * 0.015;
+
+  overlay.style.left = 'auto';
+  overlay.style.right = 'auto';
+
+  if (side === 'left') {
+    overlay.style.left =
+      `${sideMargin - leftTransparent}px`;
+  } else {
+    overlay.style.right =
+      `${sideMargin - rightTransparent}px`;
+  }
+
+  overlay.style.bottom =
+    `${bottomMargin - bottomTransparent}px`;
 }
 
 function updatePose() {
@@ -476,9 +553,10 @@ function updatePose() {
 
   $('shot-counter').textContent = `${Math.min(shot + 1, 4)} / 4`;
 
-  overlay.style.left = side === 'left' ? '2%' : 'auto';
-  overlay.style.right = side === 'right' ? '2%' : 'auto';
-  overlay.style.bottom = '1%';
+  overlay.dataset.side = side;
+  overlay.style.left = 'auto';
+  overlay.style.right = 'auto';
+  overlay.style.bottom = '0';
   overlay.style.objectFit = 'contain';
   overlay.style.objectPosition = side === 'left' ? 'bottom left' : 'bottom right';
 
