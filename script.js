@@ -1,4 +1,4 @@
-const ASSET_VERSION = '20260828-assets1';
+const ASSET_VERSION = '20260828-balanced1';
 
 const characters = {
   shakespeare: {
@@ -197,128 +197,17 @@ const poseSides = [
 ];
 
 
-const DEFAULT_POSE_PROFILES = [
-  { height: 0.68, maxWidth: 0.54, side: 'right' },
-  { height: 0.61, maxWidth: 0.52, side: 'right' },
-  { height: 0.63, maxWidth: 0.52, side: 'left'  },
-  { height: 0.67, maxWidth: 0.54, side: 'left'  }
-];
-
-
-/*
- * 큰 소품/앉은 포즈만 살짝 줄인다.
- * 셰익스피어 연극 무대는 더 작게 하고 오른쪽 아래로 붙인다.
- */
-const CHARACTER_POSE_PROFILES = {
-  shakespeare: [
-    /* wave = theatre stage: deliberately smaller and off-center */
-    { height: 0.46, maxWidth: 0.40, side: 'right' },
-    /* book = standing with scroll */
-    { height: 0.62, maxWidth: 0.49, side: 'right' },
-    /* heart = seated at writing desk */
-    { height: 0.54, maxWidth: 0.47, side: 'left'  },
-    /* thumbsup = standing with skull */
-    { height: 0.61, maxWidth: 0.49, side: 'left'  }
-  ],
-
-  austen: [
-    /* seated tea table */
-    { height: 0.56, maxWidth: 0.48, side: 'right' },
-    /* reading, seated/upper body */
-    { height: 0.56, maxWidth: 0.47, side: 'right' },
-    /* seated writing desk */
-    { height: 0.53, maxWidth: 0.47, side: 'left'  },
-    /* seated with teacup */
-    { height: 0.55, maxWidth: 0.47, side: 'left'  }
-  ],
-
-  king: [
-    /* standing */
-    { height: 0.66, maxWidth: 0.50, side: 'right' },
-    /* standing thoughtful */
-    { height: 0.65, maxWidth: 0.49, side: 'right' },
-    /* podium: larger prop, reduce */
-    { height: 0.54, maxWidth: 0.45, side: 'left'  },
-    /* microphone/sign: medium prop */
-    { height: 0.58, maxWidth: 0.47, side: 'left'  }
-  ],
-
-  keller: [
-    /* seated chair */
-    { height: 0.57, maxWidth: 0.48, side: 'right' },
-    /* desk */
-    { height: 0.52, maxWidth: 0.46, side: 'right' },
-    /* standing */
-    { height: 0.63, maxWidth: 0.49, side: 'left'  },
-    /* standing with flower */
-    { height: 0.63, maxWidth: 0.49, side: 'left'  }
-  ],
-
-  dahl: [
-    { height: 0.64, maxWidth: 0.49, side: 'right' },
-    { height: 0.64, maxWidth: 0.49, side: 'right' },
-    /* seated thinking */
-    { height: 0.56, maxWidth: 0.47, side: 'left'  },
-    { height: 0.64, maxWidth: 0.49, side: 'left'  }
-  ],
-
-  angelou: [
-    { height: 0.62, maxWidth: 0.49, side: 'right' },
-    /* upper-body with book */
-    { height: 0.56, maxWidth: 0.47, side: 'right' },
-    /* upper-body heart pose */
-    { height: 0.56, maxWidth: 0.47, side: 'left'  },
-    /* desk/books */
-    { height: 0.51, maxWidth: 0.46, side: 'left'  }
-  ],
-
-  christie: [
-    { height: 0.64, maxWidth: 0.49, side: 'right' },
-    /* seated desk */
-    { height: 0.53, maxWidth: 0.47, side: 'right' },
-    { height: 0.61, maxWidth: 0.48, side: 'left'  },
-    { height: 0.62, maxWidth: 0.48, side: 'left'  }
-  ],
-
-  hemingway: [
-    { height: 0.64, maxWidth: 0.49, side: 'right' },
-    /* seated/desk-like composition */
-    { height: 0.54, maxWidth: 0.47, side: 'right' },
-    /* typewriter desk */
-    { height: 0.52, maxWidth: 0.46, side: 'left'  },
-    { height: 0.62, maxWidth: 0.48, side: 'left'  }
-  ]
+const characterPoseSize = {
+  'shakespeare':        [0.31, 0.35, 0.31, 0.34],
+  'jane-austen':        [0.31, 0.34, 0.31, 0.33],
+  'martin-luther-king': [0.36, 0.36, 0.31, 0.34],
+  'helen-keller':       [0.32, 0.30, 0.36, 0.36],
+  'roald-dahl':         [0.36, 0.36, 0.32, 0.36],
+  'maya-angelou':       [0.36, 0.36, 0.36, 0.30],
+  'agatha-christie':    [0.36, 0.31, 0.36, 0.36],
+  'ernest-hemingway':   [0.36, 0.31, 0.30, 0.36]
 };
 
-
-function getPoseProfile(
-  characterKey,
-  poseIndex
-) {
-  const custom =
-    CHARACTER_POSE_PROFILES[
-      characterKey
-    ];
-
-  const profile =
-    custom &&
-    custom[poseIndex]
-      ? custom[poseIndex]
-      : DEFAULT_POSE_PROFILES[
-          poseIndex
-        ];
-
-  return {
-    height:
-      profile.height,
-
-    maxWidth:
-      profile.maxWidth,
-
-    side:
-      profile.side
-  };
-}
 
 const $ = id => document.getElementById(id);
 
@@ -330,97 +219,13 @@ let stream = null;
 let shot = 0;
 let photos = [];
 let countingDown = false;
+let liveRenderId = null;
+let currentPoseBounds = null;
 
 
 function resetScores() {
   scores = Object.fromEntries(
     Object.keys(characters).map(key => [key, 0])
-  );
-}
-
-
-const RESULT_HISTORY_KEY =
-  'englishCharacterRecentResultsV2';
-
-
-const RESULT_OPPORTUNITY =
-  (() => {
-    const totals =
-      Object.fromEntries(
-        Object.keys(characters)
-          .map(key => [key, 0])
-      );
-
-    questions.forEach(question => {
-      const answers =
-        question[2];
-
-      answers.forEach(answer => {
-        const targets =
-          answer[2];
-
-        targets.forEach(
-          (key, index) => {
-            totals[key] +=
-              index === 0 ? 2 : 1;
-          }
-        );
-      });
-    });
-
-    return totals;
-  })();
-
-
-function getRecentResults() {
-  try {
-    const stored =
-      JSON.parse(
-        localStorage.getItem(
-          RESULT_HISTORY_KEY
-        ) || '[]'
-      );
-
-    return Array.isArray(stored)
-      ? stored.slice(0, 4)
-      : [];
-  } catch (error) {
-    return [];
-  }
-}
-
-
-function rememberResult(key) {
-  try {
-    const recent =
-      getRecentResults();
-
-    recent.unshift(key);
-
-    localStorage.setItem(
-      RESULT_HISTORY_KEY,
-      JSON.stringify(
-        recent.slice(0, 4)
-      )
-    );
-  } catch (error) {
-    // Private browsing / storage blocked:
-    // result selection should still work.
-  }
-}
-
-
-function normalizedResultScores() {
-  return Object.fromEntries(
-    Object.keys(scores).map(key => {
-      const opportunity =
-        RESULT_OPPORTUNITY[key] || 1;
-
-      return [
-        key,
-        scores[key] / opportunity
-      ];
-    })
   );
 }
 
@@ -458,9 +263,6 @@ function startQuiz() {
 
   screen('quiz-screen');
   renderQuestion();
-
-  window.__startRequested = false;
-  window.__appStarting = false;
 }
 
 
@@ -519,10 +321,11 @@ function renderQuestion() {
 
 
 function choose(targets) {
+  // Both characters linked to the selected answer receive
+  // exactly the same score. This removes the old first-position bias.
   targets.forEach(
-    (key, index) => {
-      scores[key] +=
-        index === 0 ? 2 : 1;
+    key => {
+      scores[key] += 1;
     }
   );
 
@@ -537,110 +340,18 @@ function choose(targets) {
 
 
 function selectResult() {
-  const normalized =
-    normalizedResultScores();
+  const maximumScore =
+    Math.max(...Object.values(scores));
 
-  const bestScore =
-    Math.max(
-      ...Object.values(normalized)
+  const finalists =
+    Object.keys(scores).filter(
+      key => scores[key] === maximumScore
     );
-
-  /*
-   * 답변 성향은 유지하되, 최고점과 매우 가까운
-   * 캐릭터들도 후보에 포함한다.
-   */
-  let candidates =
-    Object.keys(normalized)
-      .filter(
-        key =>
-          normalized[key] >=
-          bestScore - 0.075
-      );
-
-  const recent =
-    getRecentResults();
-
-  /*
-   * 같은 인물이 연속해서 두 번 나왔다면,
-   * 비슷한 점수의 다른 후보가 있을 때만 반복을 막는다.
-   */
-  if (
-    recent.length >= 2 &&
-    recent[0] === recent[1] &&
-    candidates.length > 1
-  ) {
-    const alternatives =
-      candidates.filter(
-        key => key !== recent[0]
-      );
-
-    if (alternatives.length) {
-      candidates =
-        alternatives;
-    }
-  }
-
-  const adjusted =
-    candidates.map(key => {
-      let value =
-        normalized[key];
-
-      if (recent[0] === key) {
-        value -= 0.055;
-      }
-
-      if (recent[1] === key) {
-        value -= 0.025;
-      }
-
-      return {
-        key,
-        value
-      };
-    });
-
-  const minimum =
-    Math.min(
-      ...adjusted.map(item => item.value)
-    );
-
-  const weighted =
-    adjusted.map(item => ({
-      key: item.key,
-      weight:
-        1 +
-        Math.max(
-          0,
-          (item.value - minimum) * 18
-        )
-    }));
-
-  const totalWeight =
-    weighted.reduce(
-      (sum, item) =>
-        sum + item.weight,
-      0
-    );
-
-  let pick =
-    Math.random() * totalWeight;
 
   selected =
-    weighted[
-      weighted.length - 1
-    ].key;
-
-  for (const item of weighted) {
-    pick -= item.weight;
-
-    if (pick <= 0) {
-      selected =
-        item.key;
-      break;
-    }
-  }
-
-  rememberResult(selected);
+    finalists[
+      Math.floor(Math.random() * finalists.length)
+    ];
 }
 
 
@@ -723,137 +434,79 @@ function openBooth() {
   photos = [];
   countingDown = false;
 
-  $('preview-grid').innerHTML =
-    '';
+  $('preview-grid').innerHTML = '';
 
   $('save-strip-btn')
     .classList
     .add('hidden');
 
-  $('capture-btn').disabled =
-    !stream;
+  $('capture-btn').disabled = !stream;
 
-  const character =
-    characters[selected];
+  const character = characters[selected];
 
   $('photo-title').textContent =
     `Take Photos with ${character.name}`;
 
   updatePose();
-
   screen('photo-screen');
-}
 
-
-function createCroppedCharacterDataUrl(image) {
-  const bounds = getVisibleBounds(image);
-
-  const canvas = document.createElement('canvas');
-  const context = canvas.getContext('2d');
-
-  canvas.width = Math.max(1, bounds.width);
-  canvas.height = Math.max(1, bounds.height);
-
-  context.clearRect(0, 0, canvas.width, canvas.height);
-
-  context.drawImage(
-    image,
-    bounds.x,
-    bounds.y,
-    bounds.width,
-    bounds.height,
-    0,
-    0,
-    canvas.width,
-    canvas.height
-  );
-
-  return canvas.toDataURL('image/png');
-}
-
-
-function loadNormalizedCharacter(overlay, source, profile) {
-  const sourceImage = new Image();
-
-  sourceImage.onload = () => {
-    const croppedSource =
-      createCroppedCharacterDataUrl(sourceImage);
-
-    overlay.onload = () => {
-      overlay.style.left =
-        profile.side === 'left'
-          ? '2%'
-          : 'auto';
-
-      overlay.style.right =
-        profile.side === 'right'
-          ? '2%'
-          : 'auto';
-
-      overlay.style.bottom =
-        '1.5%';
-
-      overlay.style.height =
-        `${profile.height * 100}%`;
-
-      overlay.style.width =
-        'auto';
-
-      overlay.style.maxWidth =
-        `${profile.maxWidth * 100}%`;
-
-      overlay.style.maxHeight =
-        `${profile.height * 100}%`;
-
-      overlay.style.objectFit =
-        'contain';
-
-      overlay.style.objectPosition =
-        profile.side === 'left'
-          ? 'bottom left'
-          : 'bottom right';
-
-      overlay.onload = null;
-    };
-
-    overlay.src =
-      croppedSource;
-  };
-
-  sourceImage.src =
-    source;
+  if (stream) {
+    startLiveRenderer();
+  }
 }
 
 
 function updatePose() {
-  const character =
-    characters[selected];
-
-  const poseIndex =
-    Math.min(
-      shot,
-      poses.length - 1
-    );
-
-  const overlay =
-    $('character-overlay');
-
-  const profile =
-    getPoseProfile(
-      selected,
-      poseIndex
-    );
+  const character = characters[selected];
+  const poseIndex = Math.min(shot, poses.length - 1);
+  const overlay = $('character-overlay');
 
   $('shot-counter').textContent =
     `${Math.min(shot + 1, 4)} / 4`;
 
-  const source =
+  currentPoseBounds = null;
+
+  overlay.onload = () => {
+    currentPoseBounds = getVisibleBounds(overlay);
+    renderLiveFrame();
+  };
+
+  overlay.onerror = () => {
+    currentPoseBounds = null;
+  };
+
+  overlay.src =
     `images1/${character.folder}/${poses[poseIndex]}?v=${ASSET_VERSION}`;
 
-  loadNormalizedCharacter(
-    overlay,
-    source,
-    profile
+  if (overlay.complete && overlay.naturalWidth) {
+    currentPoseBounds = getVisibleBounds(overlay);
+    renderLiveFrame();
+  }
+}
+
+
+async function ensureOverlayReady() {
+  const overlay = $('character-overlay');
+
+  if (!overlay) {
+    return;
+  }
+
+  if (!overlay.complete || !overlay.naturalWidth) {
+    await new Promise(resolve => {
+      const done = () => resolve();
+      overlay.addEventListener('load', done, { once: true });
+      overlay.addEventListener('error', done, { once: true });
+    });
+  }
+
+  if (overlay.naturalWidth) {
+    currentPoseBounds =
+      getVisibleBounds(overlay);
+  }
+
+  await new Promise(resolve =>
+    requestAnimationFrame(resolve)
   );
 }
 
@@ -879,10 +532,11 @@ async function startCamera() {
         audio: false
       });
 
-    $('video').srcObject =
-      stream;
+    const video = $('video');
 
-    await $('video').play();
+    video.srcObject = stream;
+
+    await video.play();
 
     $('camera-message')
       .classList
@@ -890,6 +544,10 @@ async function startCamera() {
 
     $('capture-btn').disabled =
       false;
+
+    await ensureOverlayReady();
+
+    startLiveRenderer();
 
   } catch (error) {
     $('camera-message')
@@ -906,52 +564,6 @@ function sleep(milliseconds) {
   return new Promise(
     resolve => setTimeout(resolve, milliseconds)
   );
-}
-
-
-async function captureWithCountdown() {
-  if (
-    !stream ||
-    shot >= 4 ||
-    countingDown
-  ) {
-    return;
-  }
-
-  countingDown =
-    true;
-
-  $('capture-btn').disabled =
-    true;
-
-  const countdown =
-    $('countdown');
-
-  countdown.classList.remove('hidden');
-
-  for (const number of [3, 2, 1]) {
-    countdown.textContent =
-      number;
-
-    await sleep(700);
-  }
-
-  countdown.textContent =
-    '📸';
-
-  await sleep(250);
-
-  captureFrame();
-
-  countdown.classList.add('hidden');
-
-  countingDown =
-    false;
-
-  if (shot < 4) {
-    $('capture-btn').disabled =
-      false;
-  }
 }
 
 
@@ -1030,17 +642,10 @@ function getVisibleBounds(image) {
       tempCanvas.height
     ).data;
 
-  let left =
-    tempCanvas.width;
-
-  let top =
-    tempCanvas.height;
-
-  let right =
-    -1;
-
-  let bottom =
-    -1;
+  let left = tempCanvas.width;
+  let top = tempCanvas.height;
+  let right = -1;
+  let bottom = -1;
 
   for (
     let y = 0;
@@ -1058,21 +663,10 @@ function getVisibleBounds(image) {
         ];
 
       if (alpha > 64) {
-        if (x < left) {
-          left = x;
-        }
-
-        if (x > right) {
-          right = x;
-        }
-
-        if (y < top) {
-          top = y;
-        }
-
-        if (y > bottom) {
-          bottom = y;
-        }
+        if (x < left) left = x;
+        if (x > right) right = x;
+        if (y < top) top = y;
+        if (y > bottom) bottom = y;
       }
     }
   }
@@ -1089,20 +683,13 @@ function getVisibleBounds(image) {
     };
   }
 
-  const padding =
-    4;
+  const padding = 6;
 
   const cropX =
-    Math.max(
-      0,
-      left - padding
-    );
+    Math.max(0, left - padding);
 
   const cropY =
-    Math.max(
-      0,
-      top - padding
-    );
+    Math.max(0, top - padding);
 
   return {
     x: cropX,
@@ -1121,46 +708,71 @@ function getVisibleBounds(image) {
 }
 
 
-function drawCharacter(
+function drawCurrentCharacter(
   context,
-  overlay,
-  profile,
   canvasWidth,
   canvasHeight
 ) {
-  const bounds =
-    getVisibleBounds(overlay);
+  const overlay = $('character-overlay');
 
-  const targetHeight =
-    canvasHeight * profile.height;
-
-  const maximumWidth =
-    canvasWidth * profile.maxWidth;
-
-  let drawHeight =
-    targetHeight;
-
-  let drawWidth =
-    drawHeight *
-    (bounds.width / bounds.height);
-
-  if (drawWidth > maximumWidth) {
-    drawWidth =
-      maximumWidth;
-
-    drawHeight =
-      drawWidth *
-      (bounds.height / bounds.width);
+  if (
+    !overlay ||
+    !overlay.complete ||
+    !overlay.naturalWidth ||
+    !currentPoseBounds ||
+    !selected
+  ) {
+    return;
   }
 
+  const poseIndex =
+    Math.min(shot, poses.length - 1);
+
+  const character =
+    characters[selected];
+
+  const profile =
+    characterPoseSize[character.folder] ||
+    [0.35, 0.35, 0.35, 0.35];
+
+  const bounds =
+    currentPoseBounds;
+
+  const targetVisibleHeight =
+    canvasHeight * profile[poseIndex];
+
+  const maximumVisibleWidth =
+    canvasWidth * 0.64;
+
+  const scaleByHeight =
+    targetVisibleHeight / bounds.height;
+
+  const scaleByWidth =
+    maximumVisibleWidth / bounds.width;
+
+  const scale =
+    Math.min(
+      scaleByHeight,
+      scaleByWidth
+    );
+
+  const drawWidth =
+    bounds.width * scale;
+
+  const drawHeight =
+    bounds.height * scale;
+
   const sideMargin =
-    24;
+    canvasWidth * 0.018;
 
   const bottomMargin =
-    18;
+    canvasHeight * 0.010;
+
+  const side =
+    poseSides[poseIndex];
 
   const drawX =
-    profile.side === 'left'
+    side === 'left'
       ? sideMargin
       : canvasWidth -
         drawWidth -
@@ -1173,10 +785,12 @@ function drawCharacter(
 
   context.drawImage(
     overlay,
+
     bounds.x,
     bounds.y,
     bounds.width,
     bounds.height,
+
     drawX,
     drawY,
     drawWidth,
@@ -1185,89 +799,174 @@ function drawCharacter(
 }
 
 
-function captureFrame() {
+function renderLiveFrame() {
+  const canvas =
+    $('live-canvas');
+
   const video =
     $('video');
 
-  const overlay =
-    $('character-overlay');
+  if (!canvas) {
+    return;
+  }
 
-  const canvas =
-    $('capture-canvas');
+  if (
+    canvas.width !== 900 ||
+    canvas.height !== 1200
+  ) {
+    canvas.width = 900;
+    canvas.height = 1200;
+  }
 
   const context =
     canvas.getContext('2d');
 
-  canvas.width =
-    900;
-
-  canvas.height =
-    1200;
-
-  context.save();
-
-  context.translate(
-    canvas.width,
-    0
-  );
-
-  context.scale(
-    -1,
-    1
-  );
-
-  drawVideoCover(
-    context,
-    video,
+  context.clearRect(
     0,
     0,
     canvas.width,
     canvas.height
   );
 
-  context.restore();
+  if (
+    stream &&
+    video &&
+    video.readyState >= 2
+  ) {
+    context.save();
 
-  const poseIndex =
-    Math.min(shot, 3);
-
-  const profile =
-    getPoseProfile(
-      selected,
-      poseIndex
+    context.translate(
+      canvas.width,
+      0
     );
 
-  drawCharacter(
+    context.scale(
+      -1,
+      1
+    );
+
+    drawVideoCover(
+      context,
+      video,
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+    context.restore();
+  } else {
+    context.fillStyle =
+      '#2d2934';
+
+    context.fillRect(
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+  }
+
+  drawCurrentCharacter(
     context,
-    overlay,
-    profile,
     canvas.width,
     canvas.height
   );
+}
 
-  const photoUrl =
-    canvas.toDataURL(
-      'image/jpeg',
-      0.93
+
+function liveRenderLoop() {
+  renderLiveFrame();
+
+  liveRenderId =
+    requestAnimationFrame(
+      liveRenderLoop
+    );
+}
+
+
+function startLiveRenderer() {
+  if (liveRenderId !== null) {
+    cancelAnimationFrame(
+      liveRenderId
+    );
+  }
+
+  liveRenderId =
+    requestAnimationFrame(
+      liveRenderLoop
+    );
+}
+
+
+function stopLiveRenderer() {
+  if (liveRenderId !== null) {
+    cancelAnimationFrame(
+      liveRenderId
     );
 
-  photos.push(photoUrl);
+    liveRenderId = null;
+  }
+}
 
-  const preview =
-    document.createElement('img');
 
-  preview.src =
-    photoUrl;
+async function captureWithCountdown() {
+  if (
+    !stream ||
+    shot >= 4 ||
+    countingDown
+  ) {
+    return;
+  }
 
-  preview.alt =
-    `Photo ${shot + 1}`;
+  countingDown = true;
 
-  $('preview-grid')
-    .appendChild(preview);
+  $('capture-btn').disabled =
+    true;
 
-  shot += 1;
+  const frozenShot =
+    shot;
+
+  await ensureOverlayReady();
+
+  renderLiveFrame();
+
+  const countdown =
+    $('countdown');
+
+  countdown.classList.remove('hidden');
+
+  for (const number of [3, 2, 1]) {
+    countdown.textContent =
+      number;
+
+    await sleep(700);
+  }
+
+  countdown.textContent =
+    '📸';
+
+  await sleep(180);
+
+  // Draw the exact final preview frame immediately before saving.
+  renderLiveFrame();
+
+  captureFrame(
+    frozenShot
+  );
+
+  countdown.classList.add('hidden');
+
+  shot =
+    frozenShot + 1;
 
   if (shot < 4) {
     updatePose();
+
+    await ensureOverlayReady();
+
+    $('capture-btn').disabled =
+      false;
 
   } else {
     $('shot-counter').textContent =
@@ -1280,8 +979,80 @@ function captureFrame() {
       .classList
       .remove('hidden');
   }
+
+  countingDown =
+    false;
 }
 
+
+function captureFrame(
+  frozenShot
+) {
+  const liveCanvas =
+    $('live-canvas');
+
+  const captureCanvas =
+    $('capture-canvas');
+
+  if (
+    !liveCanvas ||
+    !captureCanvas
+  ) {
+    return;
+  }
+
+  captureCanvas.width =
+    liveCanvas.width;
+
+  captureCanvas.height =
+    liveCanvas.height;
+
+  const context =
+    captureCanvas.getContext('2d');
+
+  // This is the key change:
+  // save the exact same canvas the user is looking at.
+  context.drawImage(
+    liveCanvas,
+    0,
+    0
+  );
+
+  const photoUrl =
+    captureCanvas.toDataURL(
+      'image/jpeg',
+      0.93
+    );
+
+  photos[frozenShot] =
+    photoUrl;
+
+  const preview =
+    document.createElement('img');
+
+  preview.src =
+    photoUrl;
+
+  preview.alt =
+    `Photo ${frozenShot + 1}`;
+
+  const previewGrid =
+    $('preview-grid');
+
+  const existing =
+    previewGrid.children[frozenShot];
+
+  if (existing) {
+    previewGrid.replaceChild(
+      preview,
+      existing
+    );
+  } else {
+    previewGrid.appendChild(
+      preview
+    );
+  }
+}
 
 function roundedRectPath(
   context,
@@ -1698,6 +1469,8 @@ function goBackToResult() {
 
 
 function stopCamera() {
+  stopLiveRenderer();
+
   if (stream) {
     stream
       .getTracks()
@@ -1734,6 +1507,11 @@ function connectButton(
   }
 }
 
+
+connectButton(
+  'start-btn',
+  startQuiz
+);
 
 connectButton(
   'retry-btn',
@@ -1783,11 +1561,3 @@ window.addEventListener(
 
 
 resetScores();
-
-window.startQuiz =
-  startQuiz;
-
-if (window.__startRequested) {
-  window.__appStarting = true;
-  startQuiz();
-}
