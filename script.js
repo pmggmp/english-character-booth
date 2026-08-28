@@ -1,4 +1,4 @@
-const ASSET_VERSION = '20260828-balanced2';
+const ASSET_VERSION = '20260828-finaltuned3';
 
 const characters = {
   shakespeare: {
@@ -214,14 +214,15 @@ const poseSides = [
 
 
 const characterPoseSize = {
-  'shakespeare':        [0.347, 0.392, 0.347, 0.381],
-  'jane-austen':        [0.347, 0.381, 0.347, 0.370],
+  // fine-tuned after comparing the latest 4-cut results
+  'shakespeare':        [0.375, 0.420, 0.375, 0.410],
+  'jane-austen':        [0.390, 0.420, 0.365, 0.390],
   'martin-luther-king': [0.403, 0.403, 0.347, 0.381],
-  'helen-keller':       [0.358, 0.336, 0.403, 0.403],
+  'helen-keller':       [0.405, 0.390, 0.403, 0.403],
   'roald-dahl':         [0.403, 0.403, 0.358, 0.403],
   'maya-angelou':       [0.403, 0.403, 0.403, 0.336],
   'agatha-christie':    [0.403, 0.347, 0.403, 0.403],
-  'ernest-hemingway':   [0.403, 0.347, 0.336, 0.403]
+  'ernest-hemingway':   [0.430, 0.390, 0.370, 0.430]
 };
 
 
