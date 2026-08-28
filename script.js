@@ -1,4 +1,4 @@
-const ASSET_VERSION = '20260828-balanced1';
+const ASSET_VERSION = '20260828-balanced2';
 
 const characters = {
   shakespeare: {
@@ -182,6 +182,22 @@ const questions = [
 ];
 
 
+
+// Balanced primary target for each question/answer.
+// 0 = first character in targets gets 2 points
+// 1 = second character in targets gets 2 points
+const primaryTargetIndex = [
+  [0, 1, 0, 0],
+  [0, 0, 1, 1],
+  [0, 1, 1, 0],
+  [0, 1, 0, 0],
+  [0, 0, 0, 1],
+  [0, 0, 0, 0],
+  [1, 0, 1, 1],
+  [0, 1, 1, 1]
+];
+
+
 const poses = [
   'wave.png',
   'book.png',
@@ -198,14 +214,14 @@ const poseSides = [
 
 
 const characterPoseSize = {
-  'shakespeare':        [0.31, 0.35, 0.31, 0.34],
-  'jane-austen':        [0.31, 0.34, 0.31, 0.33],
-  'martin-luther-king': [0.36, 0.36, 0.31, 0.34],
-  'helen-keller':       [0.32, 0.30, 0.36, 0.36],
-  'roald-dahl':         [0.36, 0.36, 0.32, 0.36],
-  'maya-angelou':       [0.36, 0.36, 0.36, 0.30],
-  'agatha-christie':    [0.36, 0.31, 0.36, 0.36],
-  'ernest-hemingway':   [0.36, 0.31, 0.30, 0.36]
+  'shakespeare':        [0.347, 0.392, 0.347, 0.381],
+  'jane-austen':        [0.347, 0.381, 0.347, 0.370],
+  'martin-luther-king': [0.403, 0.403, 0.347, 0.381],
+  'helen-keller':       [0.358, 0.336, 0.403, 0.403],
+  'roald-dahl':         [0.403, 0.403, 0.358, 0.403],
+  'maya-angelou':       [0.403, 0.403, 0.403, 0.336],
+  'agatha-christie':    [0.403, 0.347, 0.403, 0.403],
+  'ernest-hemingway':   [0.403, 0.347, 0.336, 0.403]
 };
 
 
@@ -321,11 +337,17 @@ function renderQuestion() {
 
 
 function choose(targets) {
-  // Both characters linked to the selected answer receive
-  // exactly the same score. This removes the old first-position bias.
+  const primaryIndex =
+    primaryTargetIndex[qIndex][
+      questions[qIndex][2].findIndex(
+        answer => answer[2] === targets
+      )
+    ];
+
   targets.forEach(
-    key => {
-      scores[key] += 1;
+    (key, index) => {
+      scores[key] +=
+        index === primaryIndex ? 2 : 1;
     }
   );
 
@@ -742,7 +764,7 @@ function drawCurrentCharacter(
     canvasHeight * profile[poseIndex];
 
   const maximumVisibleWidth =
-    canvasWidth * 0.64;
+    canvasWidth * 0.70;
 
   const scaleByHeight =
     targetVisibleHeight / bounds.height;
