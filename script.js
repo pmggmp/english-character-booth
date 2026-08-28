@@ -1,4 +1,4 @@
-const ASSET_VERSION = '20260828-finaltuned3';
+const ASSET_VERSION = '20260828-final-jane4';
 
 const characters = {
   shakespeare: {
@@ -216,7 +216,7 @@ const poseSides = [
 const characterPoseSize = {
   // fine-tuned after comparing the latest 4-cut results
   'shakespeare':        [0.375, 0.420, 0.375, 0.410],
-  'jane-austen':        [0.390, 0.420, 0.365, 0.390],
+  'jane-austen':        [0.390, 0.399, 0.365, 0.390],
   'martin-luther-king': [0.403, 0.403, 0.347, 0.381],
   'helen-keller':       [0.405, 0.390, 0.403, 0.403],
   'roald-dahl':         [0.403, 0.403, 0.358, 0.403],
